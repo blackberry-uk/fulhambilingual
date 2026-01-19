@@ -1,0 +1,7 @@
+{
+  "name": "Save the Fulham Bilingual",
+  "description": "A parent- and community-led advocacy initiative to support and protect the Fulham Bilingual school program.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
