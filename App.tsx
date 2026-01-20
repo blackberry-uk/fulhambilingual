@@ -855,7 +855,9 @@ const Testimonials = () => {
                   </div>
                   <div>
                     <h4 className="text-lg font-black text-gray-900 tracking-tight leading-tight">{item.person_name}</h4>
-                    <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">{new Date(item.created_at).toLocaleDateString(lang === Language.EN ? 'en-GB' : 'fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                    <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">
+                      {new Date(item.created_at).toLocaleDateString(lang === Language.EN ? 'en-GB' : 'fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}, {new Date(item.created_at).toLocaleTimeString(lang === Language.EN ? 'en-GB' : 'fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                    </p>
                   </div>
                 </div>
 
