@@ -2,43 +2,32 @@
 import { RelationshipKey } from './types';
 
 export const RELATIONSHIP_MAPPING: Record<string, RelationshipKey> = {
-  "Lycée Parent - Parent d’élève du Lycée": RelationshipKey.LYCEE_PARENT,
-  "Holy Cross Parent - Parent d’élève de Holy Cross": RelationshipKey.HOLY_CROSS_PARENT,
-  "Alumni Parent – Parent d’un ancien élève du Lycée": RelationshipKey.LYCEE_ALUMNI_PARENT,
-  "Alumni Parent – Parent d’un ancien élève de Holy Cross": RelationshipKey.HOLY_CROSS_ALUMNI_PARENT,
-  "Lycée Alumni (over 16) - Ancien élève du Lycée (16 ans ou plus)": RelationshipKey.LYCEE_ALUMNI_OVER_16,
-  "Holy Cross Alumni (over 16) - Ancien élève de Holy Cross (16 ans ou plus)": RelationshipKey.HOLY_CROSS_ALUMNI_OVER_16,
-  "Current School Employee - Membre actuel du personnel de l’établissement": RelationshipKey.CURRENT_SCHOOL_EMPLOYEE,
-  "Former School Employee - Ancien membre du personnel de l’établissement": RelationshipKey.FORMER_SCHOOL_EMPLOYEE,
-  "Prospective Family - Famille prospective – Intéressée par une future inscription": RelationshipKey.PROSPECTIVE_FAMILY,
-  "Neighbour / Supporter - Riverain / Soutien de l’école": RelationshipKey.NEIGHBOUR_SUPPORTER,
+  [RelationshipKey.LYCEE_PARENT]: RelationshipKey.LYCEE_PARENT,
+  [RelationshipKey.HOLY_CROSS_PARENT]: RelationshipKey.HOLY_CROSS_PARENT,
+  [RelationshipKey.LYCEE_ALUMNI_PARENT]: RelationshipKey.LYCEE_ALUMNI_PARENT,
+  [RelationshipKey.HOLY_CROSS_ALUMNI_PARENT]: RelationshipKey.HOLY_CROSS_ALUMNI_PARENT,
+  [RelationshipKey.LYCEE_ALUMNI_OVER_16]: RelationshipKey.LYCEE_ALUMNI_OVER_16,
+  [RelationshipKey.HOLY_CROSS_ALUMNI_OVER_16]: RelationshipKey.HOLY_CROSS_ALUMNI_OVER_16,
+  [RelationshipKey.CURRENT_SCHOOL_EMPLOYEE]: RelationshipKey.CURRENT_SCHOOL_EMPLOYEE,
+  [RelationshipKey.FORMER_SCHOOL_EMPLOYEE]: RelationshipKey.FORMER_SCHOOL_EMPLOYEE,
+  [RelationshipKey.PROSPECTIVE_FAMILY]: RelationshipKey.PROSPECTIVE_FAMILY,
+  [RelationshipKey.NEIGHBOUR_SUPPORTER]: RelationshipKey.NEIGHBOUR_SUPPORTER,
 };
 
 export const RELATIONSHIP_LABELS_EN: Record<RelationshipKey, string> = {
-  [RelationshipKey.LYCEE_PARENT]: "Lycée Parent",
-  [RelationshipKey.HOLY_CROSS_PARENT]: "Holy Cross Parent",
-  [RelationshipKey.LYCEE_ALUMNI_PARENT]: "Lycée Alumni Parent",
-  [RelationshipKey.HOLY_CROSS_ALUMNI_PARENT]: "Holy Cross Alumni Parent",
-  [RelationshipKey.LYCEE_ALUMNI_OVER_16]: "Lycée Alumni (over 16)",
-  [RelationshipKey.HOLY_CROSS_ALUMNI_OVER_16]: "Holy Cross Alumni (over 16)",
-  [RelationshipKey.CURRENT_SCHOOL_EMPLOYEE]: "Current School Employee",
-  [RelationshipKey.FORMER_SCHOOL_EMPLOYEE]: "Former School Employee",
-  [RelationshipKey.PROSPECTIVE_FAMILY]: "Prospective Family",
-  [RelationshipKey.NEIGHBOUR_SUPPORTER]: "Neighbour / Supporter",
+  [RelationshipKey.LYCEE_PARENT]: RelationshipKey.LYCEE_PARENT,
+  [RelationshipKey.HOLY_CROSS_PARENT]: RelationshipKey.HOLY_CROSS_PARENT,
+  [RelationshipKey.LYCEE_ALUMNI_PARENT]: RelationshipKey.LYCEE_ALUMNI_PARENT,
+  [RelationshipKey.HOLY_CROSS_ALUMNI_PARENT]: RelationshipKey.HOLY_CROSS_ALUMNI_PARENT,
+  [RelationshipKey.LYCEE_ALUMNI_OVER_16]: RelationshipKey.LYCEE_ALUMNI_OVER_16,
+  [RelationshipKey.HOLY_CROSS_ALUMNI_OVER_16]: RelationshipKey.HOLY_CROSS_ALUMNI_OVER_16,
+  [RelationshipKey.CURRENT_SCHOOL_EMPLOYEE]: RelationshipKey.CURRENT_SCHOOL_EMPLOYEE,
+  [RelationshipKey.FORMER_SCHOOL_EMPLOYEE]: RelationshipKey.FORMER_SCHOOL_EMPLOYEE,
+  [RelationshipKey.PROSPECTIVE_FAMILY]: RelationshipKey.PROSPECTIVE_FAMILY,
+  [RelationshipKey.NEIGHBOUR_SUPPORTER]: RelationshipKey.NEIGHBOUR_SUPPORTER,
 };
 
-export const RELATIONSHIP_LABELS_FR: Record<RelationshipKey, string> = {
-  [RelationshipKey.LYCEE_PARENT]: "Parent d’élève du Lycée",
-  [RelationshipKey.HOLY_CROSS_PARENT]: "Parent d’élève de Holy Cross",
-  [RelationshipKey.LYCEE_ALUMNI_PARENT]: "Parent d’un ancien élève du Lycée",
-  [RelationshipKey.HOLY_CROSS_ALUMNI_PARENT]: "Parent d’un ancien élève de Holy Cross",
-  [RelationshipKey.LYCEE_ALUMNI_OVER_16]: "Ancien élève du Lycée (16 ans+)",
-  [RelationshipKey.HOLY_CROSS_ALUMNI_OVER_16]: "Ancien élève de Holy Cross (16 ans+)",
-  [RelationshipKey.CURRENT_SCHOOL_EMPLOYEE]: "Membre du personnel actuel",
-  [RelationshipKey.FORMER_SCHOOL_EMPLOYEE]: "Ancien membre du personnel",
-  [RelationshipKey.PROSPECTIVE_FAMILY]: "Famille prospective",
-  [RelationshipKey.NEIGHBOUR_SUPPORTER]: "Riverain / Soutien",
-};
+export const RELATIONSHIP_LABELS_FR: Record<RelationshipKey, string> = RELATIONSHIP_LABELS_EN;
 
 export const TRANSLATIONS = {
   EN: {
@@ -57,7 +46,7 @@ export const TRANSLATIONS = {
     full_name: "Full Name",
     email: "Email Address",
     relationship: "Relationship to School",
-    year_groups: "Student Year Groups (e.g. GSA, CE1)",
+    year_groups: "For current students, please enter your year's group, separated by comma (GSA, CE1, etc)",
     comment: "Optional Supporting Comment",
     petition_support_label: "I support this petition / Je soutiens cette pétition",
     consent: "I consent to the public use of my name and comment.",
@@ -147,7 +136,7 @@ Parents, families, alumni, and supporters of Fulham Bilingual School`,
     full_name: "Nom complet",
     email: "Adresse e-mail",
     relationship: "Relation avec l'école",
-    year_groups: "Groupes d'âge des élèves (ex: GSA, CE1)",
+    year_groups: "Pour les élèves actuellement scolarisés, indiquez le niveau de classe, séparé par des virgules (GSA, CE1, etc.).",
     comment: "Commentaire de soutien (facultatif)",
     petition_support_label: "Je soutiens cette pétition / I support this petition",
     consent: "Je consens à l'utilisation publique de mon nom et de mon commentaire.",

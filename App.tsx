@@ -287,36 +287,36 @@ const PetitionForm = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t.full_name}</label>
+              <label className="text-[13px] font-black text-gray-400 uppercase tracking-widest">{t.full_name}</label>
               <input
                 required
                 type="text"
                 value={formData.full_name}
                 onChange={e => setFormData({ ...formData, full_name: e.target.value })}
-                className="w-full border-2 border-gray-100 rounded-2xl p-5 bg-gray-50 outline-none font-bold text-lg focus:border-[#d52b27] focus:ring-4 focus:ring-red-50 transition-all shadow-sm"
+                className="w-full border-2 border-gray-100 rounded-2xl p-6 bg-gray-50 outline-none font-bold text-2xl focus:border-[#d52b27] focus:ring-4 focus:ring-red-50 transition-all shadow-sm"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t.email}</label>
+              <label className="text-[13px] font-black text-gray-400 uppercase tracking-widest">{t.email}</label>
               <input
                 required
                 type="email"
                 value={formData.email_address}
                 onChange={e => setFormData({ ...formData, email_address: e.target.value })}
-                className="w-full border-2 border-gray-100 rounded-2xl p-5 bg-gray-50 outline-none font-bold text-lg focus:border-[#d52b27] focus:ring-4 focus:ring-red-50 transition-all shadow-sm"
+                className="w-full border-2 border-gray-100 rounded-2xl p-6 bg-gray-50 outline-none font-bold text-2xl focus:border-[#d52b27] focus:ring-4 focus:ring-red-50 transition-all shadow-sm"
               />
             </div>
           </div>
 
           <div className="space-y-6">
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t.relationship}</label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <label className="text-[13px] font-black text-gray-400 uppercase tracking-widest">{t.relationship}</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(labels).map(([key, label]) => (
                 <button
                   key={key}
                   type="button"
                   onClick={() => toggleRelationship(key as RelationshipKey)}
-                  className={`text-left p-5 rounded-2xl text-xs transition-all border-2 font-bold ${formData.relationships.includes(key as RelationshipKey)
+                  className={`text-left p-6 rounded-2xl text-base transition-all border-2 font-bold ${formData.relationships.includes(key as RelationshipKey)
                     ? 'bg-[#d52b27] text-white border-[#d52b27] shadow-lg scale-105'
                     : 'bg-gray-50 text-gray-600 border-gray-100 hover:border-gray-200 hover:bg-white shadow-sm'
                     }`}
@@ -329,38 +329,38 @@ const PetitionForm = () => {
 
           {isCurrentStudentOrParent && (
             <div className="animate-in slide-in-from-top-4 space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t.year_groups}</label>
+              <label className="text-[13px] font-black text-gray-400 uppercase tracking-widest">{t.year_groups}</label>
               <input
                 required
                 type="text"
                 value={formData.year_groups}
                 onChange={e => setFormData({ ...formData, year_groups: e.target.value })}
                 placeholder="e.g. GSA, CP, CE1..."
-                className="w-full border-2 border-gray-100 rounded-2xl p-5 bg-gray-50 outline-none font-bold text-lg focus:border-[#d52b27] focus:ring-4 focus:ring-red-50 transition-all shadow-sm"
+                className="w-full border-2 border-gray-100 rounded-2xl p-6 bg-gray-50 outline-none font-bold text-2xl focus:border-[#d52b27] focus:ring-4 focus:ring-red-50 transition-all shadow-sm"
               />
             </div>
           )}
 
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t.comment}</label>
+            <label className="text-[13px] font-black text-gray-400 uppercase tracking-widest">{t.comment}</label>
             <textarea
               rows={4}
               value={formData.comment}
               onChange={e => setFormData({ ...formData, comment: e.target.value })}
-              className="w-full border-2 border-gray-100 rounded-2xl p-5 bg-gray-50 outline-none font-medium text-lg focus:border-[#d52b27] focus:ring-4 focus:ring-red-50 transition-all shadow-sm"
+              className="w-full border-2 border-gray-100 rounded-2xl p-6 bg-gray-50 outline-none font-medium text-2xl focus:border-[#d52b27] focus:ring-4 focus:ring-red-50 transition-all shadow-sm"
             ></textarea>
           </div>
 
-          <div className="flex items-center space-x-4 bg-gray-50 p-8 rounded-2xl border border-gray-100">
+          <div className="flex items-center space-x-6 bg-gray-50 p-8 rounded-3xl border border-gray-100">
             <input
               required
               type="checkbox"
               id="consent"
               checked={formData.consent}
               onChange={e => setFormData({ ...formData, consent: e.target.checked })}
-              className="w-6 h-6 rounded-lg text-[#d52b27] focus:ring-[#d52b27] cursor-pointer"
+              className="w-8 h-8 rounded-xl text-[#d52b27] focus:ring-[#d52b27] cursor-pointer"
             />
-            <label htmlFor="consent" className="text-xs text-gray-600 font-bold cursor-pointer">
+            <label htmlFor="consent" className="text-base text-gray-600 font-bold cursor-pointer leading-tight">
               {t.consent}
             </label>
           </div>
@@ -368,7 +368,7 @@ const PetitionForm = () => {
           <button
             type="submit"
             disabled={loading || formData.relationships.length === 0}
-            className="w-full py-8 bg-[#d52b27] text-white font-black text-xl rounded-full shadow-2xl hover:bg-gray-900 transition-all disabled:opacity-20 disabled:grayscale uppercase tracking-widest"
+            className="w-full py-10 bg-[#d52b27] text-white font-black text-2xl rounded-full shadow-2xl hover:bg-gray-900 transition-all disabled:opacity-20 disabled:grayscale uppercase tracking-widest"
           >
             {loading ? t.loading : t.submit}
           </button>

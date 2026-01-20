@@ -5,16 +5,16 @@ export enum Language {
 }
 
 export enum RelationshipKey {
-  LYCEE_PARENT = 'lycee_parent',
-  HOLY_CROSS_PARENT = 'holy_cross_parent',
-  LYCEE_ALUMNI_PARENT = 'lycee_alumni_parent',
-  HOLY_CROSS_ALUMNI_PARENT = 'holy_cross_alumni_parent',
-  LYCEE_ALUMNI_OVER_16 = 'lycee_alumni_over_16',
-  HOLY_CROSS_ALUMNI_OVER_16 = 'holy_cross_alumni_over_16',
-  CURRENT_SCHOOL_EMPLOYEE = 'current_school_employee',
-  FORMER_SCHOOL_EMPLOYEE = 'former_school_employee',
-  PROSPECTIVE_FAMILY = 'prospective_family',
-  NEIGHBOUR_SUPPORTER = 'neighbour_supporter'
+  LYCEE_PARENT = 'Lycée Parent - Parent d’élève du Lycée',
+  HOLY_CROSS_PARENT = 'Holy Cross Parent - Parent d’élève de Holy Cross',
+  LYCEE_ALUMNI_PARENT = 'Alumni Parent – Parent d’un ancien élève du Lycée',
+  HOLY_CROSS_ALUMNI_PARENT = 'Alumni Parent – Parent d’un ancien élève de Holy Cross',
+  LYCEE_ALUMNI_OVER_16 = 'Lycée Alumni (over 16) - Ancien élève du Lycée (16 ans ou plus)',
+  HOLY_CROSS_ALUMNI_OVER_16 = 'Holy Cross Alumni (over 16) - Ancien élève de Holy Cross (16 ans ou plus)',
+  CURRENT_SCHOOL_EMPLOYEE = 'Current School Employee - Membre actuel du personnel de l’établissement',
+  FORMER_SCHOOL_EMPLOYEE = 'Former School Employee - Ancien membre du personnel de l’établissement',
+  PROSPECTIVE_FAMILY = 'Prospective Family - Famille prospective – Intéressée par une future inscription',
+  NEIGHBOUR_SUPPORTER = 'Neighbour / Supporter - Riverain / Soutien de l’école'
 }
 
 export interface Person {
