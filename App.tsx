@@ -548,7 +548,6 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
 
           <div className="flex items-center space-x-6 bg-gray-50 p-8 rounded-3xl border border-gray-100">
             <input
-              required
               type="checkbox"
               id="consent"
               checked={formData.consent}
