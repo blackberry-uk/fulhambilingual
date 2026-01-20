@@ -29,29 +29,38 @@ const useApp = () => {
 const PetitionContent = () => {
   const { lang: appLang } = useApp();
   const [activeLang, setActiveLang] = useState<Language>(appLang);
+  const [content, setContent] = useState<string>('');
+
+  useEffect(() => {
+    storage.getSiteContent('petition_body').then(data => {
+      if (data) {
+        setContent(activeLang === Language.EN ? data.en : data.fr);
+      } else {
+        setContent(TRANSLATIONS[activeLang].petition_body);
+      }
+    });
+  }, [activeLang]);
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-center p-1 bg-gray-100 rounded-full w-fit mx-auto mb-8">
+      <div className="flex justify-center p-1 bg-gray-100 rounded-full w-fit mx-auto mb-12">
         <button
           onClick={() => setActiveLang(Language.EN)}
-          className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeLang === Language.EN ? 'bg-white text-[#d52b27] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+          className={`px-8 py-3 rounded-full text-[11px] font-black uppercase tracking-widest transition-all ${activeLang === Language.EN ? 'bg-white text-[#d52b27] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
         >
           English
         </button>
         <button
           onClick={() => setActiveLang(Language.FR)}
-          className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeLang === Language.FR ? 'bg-white text-[#d52b27] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+          className={`px-8 py-3 rounded-full text-[11px] font-black uppercase tracking-widest transition-all ${activeLang === Language.FR ? 'bg-white text-[#d52b27] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
         >
           Français
         </button>
       </div>
       <div
-        className="prose prose-xl max-w-3xl mx-auto text-gray-800 leading-relaxed font-medium text-balance animate-in fade-in duration-700"
-        style={{ whiteSpace: 'pre-line' }}
-      >
-        {TRANSLATIONS[activeLang].petition_body}
-      </div>
+        className="prose prose-xl max-w-3xl mx-auto text-gray-800 leading-relaxed font-medium text-left animate-in fade-in duration-700"
+        dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, '<br/>') }}
+      />
     </div>
   );
 };
@@ -167,7 +176,8 @@ const PetitionForm = () => {
     relationships: [] as RelationshipKey[],
     year_groups: '',
     comment: '',
-    consent: false
+    consent: false,
+    petition_support: true
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -194,7 +204,7 @@ const PetitionForm = () => {
       const record: PetitionRecord = {
         id: '',
         person_id: personData.id,
-        petition_support: true,
+        petition_support: formData.petition_support,
         supporting_comment: formData.comment,
         consent_public_use: formData.consent,
         submission_timestamp: new Date().toISOString()
@@ -261,6 +271,20 @@ const PetitionForm = () => {
       <div ref={formRef} className="bg-white border-t border-gray-100 pt-20">
         <h2 className="text-4xl font-black mb-16 text-center text-gray-900 tracking-tighter uppercase">{t.petition_action}</h2>
         <form onSubmit={handleSubmit} className="space-y-12">
+          <div className="flex items-center space-x-6 bg-red-50 p-8 rounded-3xl border-2 border-red-100 animate-in fade-in slide-in-from-top-4 duration-700">
+            <input
+              required
+              type="checkbox"
+              id="petition_support"
+              checked={formData.petition_support}
+              onChange={e => setFormData({ ...formData, petition_support: e.target.checked })}
+              className="w-8 h-8 rounded-xl text-[#d52b27] focus:ring-[#d52b27] cursor-pointer"
+            />
+            <label htmlFor="petition_support" className="text-xl md:text-2xl font-black text-gray-900 cursor-pointer leading-tight">
+              {t.petition_support_label}
+            </label>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div className="space-y-2">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t.full_name}</label>
@@ -269,7 +293,7 @@ const PetitionForm = () => {
                 type="text"
                 value={formData.full_name}
                 onChange={e => setFormData({ ...formData, full_name: e.target.value })}
-                className="w-full border border-gray-100 rounded-2xl p-5 bg-gray-50/50 outline-none font-bold text-lg"
+                className="w-full border-2 border-gray-100 rounded-2xl p-5 bg-gray-50 outline-none font-bold text-lg focus:border-[#d52b27] focus:ring-4 focus:ring-red-50 transition-all shadow-sm"
               />
             </div>
             <div className="space-y-2">
@@ -279,7 +303,7 @@ const PetitionForm = () => {
                 type="email"
                 value={formData.email_address}
                 onChange={e => setFormData({ ...formData, email_address: e.target.value })}
-                className="w-full border border-gray-100 rounded-2xl p-5 bg-gray-50/50 outline-none font-bold text-lg"
+                className="w-full border-2 border-gray-100 rounded-2xl p-5 bg-gray-50 outline-none font-bold text-lg focus:border-[#d52b27] focus:ring-4 focus:ring-red-50 transition-all shadow-sm"
               />
             </div>
           </div>
@@ -292,9 +316,9 @@ const PetitionForm = () => {
                   key={key}
                   type="button"
                   onClick={() => toggleRelationship(key as RelationshipKey)}
-                  className={`text-left p-5 rounded-2xl text-xs transition-all border font-bold ${formData.relationships.includes(key as RelationshipKey)
-                    ? 'bg-[#d52b27] text-white border-[#d52b27] shadow-md'
-                    : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
+                  className={`text-left p-5 rounded-2xl text-xs transition-all border-2 font-bold ${formData.relationships.includes(key as RelationshipKey)
+                    ? 'bg-[#d52b27] text-white border-[#d52b27] shadow-lg scale-105'
+                    : 'bg-gray-50 text-gray-600 border-gray-100 hover:border-gray-200 hover:bg-white shadow-sm'
                     }`}
                 >
                   {label}
@@ -312,7 +336,7 @@ const PetitionForm = () => {
                 value={formData.year_groups}
                 onChange={e => setFormData({ ...formData, year_groups: e.target.value })}
                 placeholder="e.g. GSA, CP, CE1..."
-                className="w-full border border-gray-100 rounded-2xl p-5 bg-gray-50/50 outline-none font-bold text-lg"
+                className="w-full border-2 border-gray-100 rounded-2xl p-5 bg-gray-50 outline-none font-bold text-lg focus:border-[#d52b27] focus:ring-4 focus:ring-red-50 transition-all shadow-sm"
               />
             </div>
           )}
@@ -323,11 +347,11 @@ const PetitionForm = () => {
               rows={4}
               value={formData.comment}
               onChange={e => setFormData({ ...formData, comment: e.target.value })}
-              className="w-full border border-gray-100 rounded-2xl p-5 bg-gray-50/50 outline-none font-medium text-lg"
+              className="w-full border-2 border-gray-100 rounded-2xl p-5 bg-gray-50 outline-none font-medium text-lg focus:border-[#d52b27] focus:ring-4 focus:ring-red-50 transition-all shadow-sm"
             ></textarea>
           </div>
 
-          <div className="flex items-center space-x-4 bg-gray-50 p-8 rounded-2xl">
+          <div className="flex items-center space-x-4 bg-gray-50 p-8 rounded-2xl border border-gray-100">
             <input
               required
               type="checkbox"

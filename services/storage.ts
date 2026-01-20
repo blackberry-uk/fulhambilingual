@@ -23,7 +23,7 @@ export const storage = {
         }, { onConflict: 'email_address' })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     } else {
@@ -51,7 +51,7 @@ export const storage = {
         })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     } else {
@@ -76,7 +76,7 @@ export const storage = {
         })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     } else {
@@ -95,7 +95,7 @@ export const storage = {
         .select('*')
         .eq('is_moderated', true)
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data || [];
     } else {
@@ -109,7 +109,7 @@ export const storage = {
         .from('forum_threads')
         .select('*, forum_replies(*)')
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data || [];
     } else {
@@ -130,7 +130,7 @@ export const storage = {
         })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     } else {
@@ -149,23 +149,23 @@ export const storage = {
         .select('id')
         .eq('email_address', email)
         .single();
-      
+
       if (pError || !person) return false;
 
       const { error: rError } = await supabase!
         .from('petition_records')
-        .update({ 
+        .update({
           consent_public_use: consent,
-          supporting_comment: comment 
+          supporting_comment: comment
         })
         .eq('person_id', person.id);
-      
+
       return !rError;
     } else {
       const persons = getLocal('persons');
       const person = persons.find((p: any) => p.email_address === email);
       if (!person) return false;
-      
+
       const records = getLocal('petition_records');
       const recordIndex = records.findIndex((r: any) => r.person_id === person.id);
       if (recordIndex > -1) {
@@ -184,7 +184,7 @@ export const storage = {
         .from('petition_records')
         .select('*', { count: 'exact', head: true })
         .eq('petition_support', true);
-      
+
       if (error) return { total: 0 };
       return { total: count || 0 };
     } else {
@@ -199,7 +199,7 @@ export const storage = {
         .select('submission_timestamp, persons(full_name)')
         .eq('consent_public_use', true)
         .order('submission_timestamp', { ascending: false });
-      
+
       if (error) return [];
       return data.map(r => ({
         name: (r.persons as any)?.full_name || "Supporter",
@@ -213,5 +213,22 @@ export const storage = {
         timestamp: r.submission_timestamp
       })).sort((a: any, b: any) => b.timestamp.localeCompare(a.timestamp));
     }
+  },
+
+  async getSiteContent(key: string): Promise<{ en: string; fr: string } | null> {
+    if (isSupabaseReady()) {
+      const { data, error } = await supabase!
+        .from('site_content')
+        .select('en_content, fr_content')
+        .eq('key', key)
+        .single();
+
+      if (error) {
+        console.error('Error fetching site content:', error);
+        return null;
+      }
+      return { en: data.en_content, fr: data.fr_content };
+    }
+    return null;
   }
 };
