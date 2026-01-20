@@ -84,6 +84,7 @@ export const storage = {
       const { data, error } = await supabase!
         .from('testimonials')
         .insert({
+          person_id: testimonial.person_id,
           person_name: testimonial.person_name,
           content: testimonial.content,
           content_translated: testimonial.content_translated,
@@ -154,6 +155,35 @@ export const storage = {
     } else {
       const items = getLocal('testimonials');
       const index = items.findIndex((t: any) => t.person_name === personName || t.person_name === 'Anonymous' || t.person_name === 'Anonyme');
+      if (index > -1) {
+        items[index] = { ...items[index], ...updates };
+        setLocal('testimonials', items);
+      }
+      return items[index];
+    }
+  },
+
+  updateTestimonialByPersonId: async (personId: string, updates: Partial<Testimonial>) => {
+    if (isSupabaseReady()) {
+      // Only include fields that are actually provided
+      const updateData: any = {};
+      if (updates.person_name !== undefined) updateData.person_name = updates.person_name;
+      if (updates.content !== undefined) updateData.content = updates.content;
+      if (updates.content_translated !== undefined) updateData.content_translated = updates.content_translated;
+      if (updates.language !== undefined) updateData.language = updates.language;
+      if (updates.is_moderated !== undefined) updateData.is_moderated = updates.is_moderated;
+
+      const { data, error } = await supabase!
+        .from('testimonials')
+        .update(updateData)
+        .eq('person_id', personId)
+        .select();
+
+      if (error) throw error;
+      return data;
+    } else {
+      const items = getLocal('testimonials');
+      const index = items.findIndex((t: any) => t.person_id === personId);
       if (index > -1) {
         items[index] = { ...items[index], ...updates };
         setLocal('testimonials', items);

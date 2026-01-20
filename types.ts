@@ -41,6 +41,7 @@ export interface PetitionRecord {
 
 export interface Testimonial {
   id: string;
+  person_id?: string;
   person_name: string;
   content: string;
   content_translated?: string;

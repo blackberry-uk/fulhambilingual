@@ -304,10 +304,12 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
 
 
 
+
         // 2. If there is a comment, update the testimonial
         if (formData.comment) {
           // Use Anonymous if consent is false
           const displayName = formData.consent ? formData.full_name : 'Anonymous';
+          const personId = initialData?.person?.id;
 
           // Check if the comment text or consent status changed
           const originalComment = initialData?.petitionRecord?.supporting_comment || '';
@@ -315,7 +317,7 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
           const commentChanged = formData.comment !== originalComment;
           const consentChanged = formData.consent !== originalConsent;
 
-          // Try to update existing testimonial
+          // Try to update existing testimonial using person_id
           try {
             if (commentChanged) {
               // Comment changed - re-translate
@@ -323,25 +325,50 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
               const target = detected === Language.EN ? Language.FR : Language.EN;
               const translated = await translateText(formData.comment, detected, target);
 
-              await storage.updateTestimonialByPersonOrAnonymous(formData.full_name, {
-                person_name: displayName,
-                content: formData.comment,
-                content_translated: translated,
-                language: detected,
-                is_moderated: true
-              });
+              if (personId) {
+                await storage.updateTestimonialByPersonId(personId, {
+                  person_name: displayName,
+                  content: formData.comment,
+                  content_translated: translated,
+                  language: detected,
+                  is_moderated: true
+                });
+              } else {
+                // Fallback to name-based update if no person_id
+                await storage.updateTestimonialByPersonOrAnonymous(formData.full_name, {
+                  person_name: displayName,
+                  content: formData.comment,
+                  content_translated: translated,
+                  language: detected,
+                  is_moderated: true
+                });
+              }
             } else if (consentChanged) {
               // Only consent changed - update name only, preserve everything else
-              await storage.updateTestimonialByPersonOrAnonymous(formData.full_name, {
-                person_name: displayName,
-                is_moderated: true
-              });
+              if (personId) {
+                await storage.updateTestimonialByPersonId(personId, {
+                  person_name: displayName,
+                  is_moderated: true
+                });
+              } else {
+                await storage.updateTestimonialByPersonOrAnonymous(formData.full_name, {
+                  person_name: displayName,
+                  is_moderated: true
+                });
+              }
             } else {
               // Nothing changed - still update moderation status
-              await storage.updateTestimonialByPersonOrAnonymous(formData.full_name, {
-                person_name: displayName,
-                is_moderated: true
-              });
+              if (personId) {
+                await storage.updateTestimonialByPersonId(personId, {
+                  person_name: displayName,
+                  is_moderated: true
+                });
+              } else {
+                await storage.updateTestimonialByPersonOrAnonymous(formData.full_name, {
+                  person_name: displayName,
+                  is_moderated: true
+                });
+              }
             }
           } catch (e) {
             console.error('Failed to update testimonial:', e);
@@ -352,6 +379,7 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
 
             await storage.addTestimonial({
               id: '',
+              person_id: personId,
               person_name: displayName,
               content: formData.comment,
               content_translated: translated,
