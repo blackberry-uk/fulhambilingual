@@ -985,7 +985,6 @@ const SignatoryList = () => {
               className="inline-flex items-center justify-center space-x-2 text-[#d52b27] font-black uppercase text-[11px] tracking-widest hover:text-gray-900 transition-colors border-2 border-red-50 px-6 rounded-full bg-red-50/30 h-12"
             >
               <span>{t.manage_signature}</span>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
             </button>
 
             <select
