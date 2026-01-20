@@ -213,8 +213,14 @@ const Hero = () => {
             onClick={() => {
               setView('petition');
               setTimeout(() => {
-                document.getElementById('petition-form-title')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }, 100);
+                const element = document.getElementById('petition-form-title');
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                  // Fallback if element not found
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }, 300);
             }}
             className="w-full md:w-auto px-12 py-6 bg-[#d52b27] text-white font-black rounded-full shadow-xl hover:shadow-red-200 hover:-translate-y-1 btn-transition text-lg uppercase tracking-widest"
           >
@@ -1216,8 +1222,13 @@ const MainContent = () => {
                 onClick={() => {
                   setView('petition');
                   setTimeout(() => {
-                    document.getElementById('petition-form-title')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }, 100);
+                    const element = document.getElementById('petition-form-title');
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else {
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                  }, 300);
                 }}
                 className="group flex flex-col items-center mx-auto space-y-4"
               >
@@ -1240,8 +1251,13 @@ const MainContent = () => {
                   onClick={() => {
                     setShowManageSignature(false);
                     setTimeout(() => {
-                      document.getElementById('petition-form-title')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }, 100);
+                      const element = document.getElementById('petition-form-title');
+                      if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      } else {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }
+                    }, 300);
                   }}
                   className="flex items-center space-x-2 text-gray-500 hover:text-gray-900 font-bold transition-all"
                 >
