@@ -895,7 +895,7 @@ const SignatoryList = () => {
   const t = TRANSLATIONS[lang];
   const [sigs, setSigs] = useState<{ name: string, timestamp: string, relationship: string[], years: string[], hasTestimonial: boolean, testimonialId?: string, consent: boolean }[]>([]);
   const [filter, setFilter] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<'alphabetical' | 'date'>('alphabetical');
+  const [sortBy, setSortBy] = useState<'alphabetical' | 'alphabetical-reverse' | 'date' | 'date-reverse'>('alphabetical');
 
   useEffect(() => {
     storage.getPublicSignatories().then(setSigs);
@@ -906,13 +906,15 @@ const SignatoryList = () => {
     : sigs.filter(s => s.relationship.some(r => r.includes(filter.split(' - ')[0])));
 
   const sortedSigs = [...filteredSigs].sort((a, b) => {
-    // When sorting by date, include everyone in chronological order
-    if (sortBy === 'date') {
-      return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    // When sorting by date
+    if (sortBy === 'date' || sortBy === 'date-reverse') {
+      const diff = new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+      return sortBy === 'date-reverse' ? -diff : diff;
     } else {
       // When sorting alphabetically, show consented names first
       if (a.consent !== b.consent) return a.consent ? -1 : 1;
-      return a.name.localeCompare(b.name);
+      const comparison = a.name.localeCompare(b.name);
+      return sortBy === 'alphabetical-reverse' ? -comparison : comparison;
     }
   });
 
@@ -957,23 +959,28 @@ const SignatoryList = () => {
 
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">
             <button
-              onClick={() => setSortBy('alphabetical')}
-              className={`px-8 rounded-full text-[11px] font-black uppercase tracking-widest transition-all border-2 h-12 flex items-center justify-center space-x-2 ${sortBy === 'alphabetical' ? 'bg-[#d52b27] text-white border-[#d52b27] shadow-xl shadow-red-100' : 'bg-white text-[#d52b27] border-red-100 hover:border-[#d52b27]'}`}
+              onClick={() => setSortBy(sortBy === 'alphabetical' ? 'alphabetical-reverse' : 'alphabetical')}
+              className={`px-8 rounded-full text-[11px] font-black uppercase tracking-widest transition-all border-2 h-12 flex items-center justify-center space-x-2 ${sortBy === 'alphabetical' || sortBy === 'alphabetical-reverse' ? 'bg-[#d52b27] text-white border-[#d52b27] shadow-xl shadow-red-100' : 'bg-white text-[#d52b27] border-red-100 hover:border-[#d52b27]'}`}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
               </svg>
-              <span>A-Z</span>
+              <span>{sortBy === 'alphabetical-reverse' ? 'Z-A' : 'A-Z'}</span>
             </button>
 
             <button
-              onClick={() => setSortBy('date')}
-              className={`px-8 rounded-full text-[11px] font-black uppercase tracking-widest transition-all border-2 h-12 flex items-center justify-center space-x-2 ${sortBy === 'date' ? 'bg-[#d52b27] text-white border-[#d52b27] shadow-xl shadow-red-100' : 'bg-white text-[#d52b27] border-red-100 hover:border-[#d52b27]'}`}
+              onClick={() => setSortBy(sortBy === 'date' ? 'date-reverse' : 'date')}
+              className={`px-8 rounded-full text-[11px] font-black uppercase tracking-widest transition-all border-2 h-12 flex items-center justify-center space-x-2 ${sortBy === 'date' || sortBy === 'date-reverse' ? 'bg-[#d52b27] text-white border-[#d52b27] shadow-xl shadow-red-100' : 'bg-white text-[#d52b27] border-red-100 hover:border-[#d52b27]'}`}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <span>{lang === Language.EN ? 'Newest' : 'Récent'}</span>
+              <span>
+                {sortBy === 'date-reverse'
+                  ? (lang === Language.EN ? 'Oldest' : 'Ancien')
+                  : (lang === Language.EN ? 'Newest' : 'Récent')
+                }
+              </span>
             </button>
 
             <button
