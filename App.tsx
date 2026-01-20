@@ -926,6 +926,7 @@ const SignatoryList = () => {
         </div>
 
 
+
         <div className="flex flex-col items-center space-y-6">
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">
             <button
@@ -953,33 +954,42 @@ const SignatoryList = () => {
                 );
               })}
             </select>
-
-            <button
-              onClick={() => setSortBy(sortBy === 'alphabetical' ? 'date' : 'alphabetical')}
-              className="bg-white border-2 border-gray-100 rounded-full px-6 text-[11px] font-black uppercase tracking-widest hover:border-[#d52b27] transition-all h-12 flex items-center space-x-2"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {sortBy === 'alphabetical' ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                )}
-              </svg>
-              <span>{sortBy === 'alphabetical' ? (lang === Language.EN ? 'A-Z' : 'A-Z') : (lang === Language.EN ? 'Newest' : 'Récent')}</span>
-            </button>
           </div>
 
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+            <button
+              onClick={() => setSortBy('alphabetical')}
+              className={`px-8 rounded-full text-[11px] font-black uppercase tracking-widest transition-all border-2 h-12 flex items-center justify-center space-x-2 ${sortBy === 'alphabetical' ? 'bg-[#d52b27] text-white border-[#d52b27] shadow-xl shadow-red-100' : 'bg-white text-[#d52b27] border-red-100 hover:border-[#d52b27]'}`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+              </svg>
+              <span>A-Z</span>
+            </button>
+
+            <button
+              onClick={() => setSortBy('date')}
+              className={`px-8 rounded-full text-[11px] font-black uppercase tracking-widest transition-all border-2 h-12 flex items-center justify-center space-x-2 ${sortBy === 'date' ? 'bg-[#d52b27] text-white border-[#d52b27] shadow-xl shadow-red-100' : 'bg-white text-[#d52b27] border-red-100 hover:border-[#d52b27]'}`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>{lang === Language.EN ? 'Newest' : 'Récent'}</span>
+            </button>
+
             <button
               onClick={() => setFilter(filter === 'Alumni (over 16)' ? 'all' : 'Alumni (over 16)')}
               className={`px-8 rounded-full text-[11px] font-black uppercase tracking-widest transition-all border-2 h-12 flex items-center justify-center ${filter === 'Alumni (over 16)' ? 'bg-indigo-600 text-white border-indigo-600 shadow-indigo-100 shadow-xl' : 'bg-white text-indigo-600 border-indigo-100 hover:border-indigo-600'}`}
             >
               Alumni - Anciens Élèves
             </button>
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-3 animate-pulse">
+          </div>
+
+          {filter === 'Alumni (over 16)' && (
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest animate-pulse">
               {t.alumni_subtitle_alt}
             </span>
-          </div>
+          )}
         </div>
       </div>
 
@@ -1030,7 +1040,7 @@ const SignatoryList = () => {
               </div>
             </div>
             <span className="text-gray-500 text-[11px] font-bold uppercase tracking-widest mt-4 md:mt-0 bg-gray-50 px-3 py-1 rounded-full md:bg-transparent md:px-0">
-              {new Date(s.timestamp).toLocaleDateString(lang === Language.EN ? 'en-GB' : 'fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}
+              {new Date(s.timestamp).toLocaleDateString(lang === Language.EN ? 'en-GB' : 'fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}, {new Date(s.timestamp).toLocaleTimeString(lang === Language.EN ? 'en-GB' : 'fr-FR', { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
         ))}
