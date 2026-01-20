@@ -435,6 +435,7 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
 
         await storage.addTestimonial({
           id: '',
+          person_id: personData.id,
           person_name: displayName,
           content: formData.comment,
           content_translated: translated,
