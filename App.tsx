@@ -303,14 +303,17 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
         }
 
 
+
         // 2. If there is a comment, update the testimonial
         if (formData.comment) {
           // Use Anonymous if consent is false
           const displayName = formData.consent ? formData.full_name : 'Anonymous';
 
-          // Check if the comment text actually changed
+          // Check if the comment text or consent status changed
           const originalComment = initialData?.petitionRecord?.supporting_comment || '';
+          const originalConsent = initialData?.petitionRecord?.consent_public_use || false;
           const commentChanged = formData.comment !== originalComment;
+          const consentChanged = formData.consent !== originalConsent;
 
           // Try to update existing testimonial
           try {
@@ -327,8 +330,14 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
                 language: detected,
                 is_moderated: true
               });
+            } else if (consentChanged) {
+              // Only consent changed - update name only, preserve everything else
+              await storage.updateTestimonial(formData.full_name, {
+                person_name: displayName,
+                is_moderated: true
+              });
             } else {
-              // Comment unchanged - only update name and moderation, preserve translation
+              // Nothing changed - still update moderation status
               await storage.updateTestimonial(formData.full_name, {
                 person_name: displayName,
                 is_moderated: true
