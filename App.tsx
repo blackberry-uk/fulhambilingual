@@ -895,6 +895,7 @@ const SignatoryList = () => {
   const t = TRANSLATIONS[lang];
   const [sigs, setSigs] = useState<{ name: string, timestamp: string, relationship: string[], years: string[], hasTestimonial: boolean, testimonialId?: string, consent: boolean }[]>([]);
   const [filter, setFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'alphabetical' | 'date'>('alphabetical');
 
   useEffect(() => {
     storage.getPublicSignatories().then(setSigs);
@@ -905,8 +906,15 @@ const SignatoryList = () => {
     : sigs.filter(s => s.relationship.some(r => r.includes(filter.split(' - ')[0])));
 
   const sortedSigs = [...filteredSigs].sort((a, b) => {
+    // Always show consented names first
     if (a.consent !== b.consent) return a.consent ? -1 : 1;
-    return a.name.localeCompare(b.name);
+
+    // Then sort by selected method
+    if (sortBy === 'date') {
+      return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    } else {
+      return a.name.localeCompare(b.name);
+    }
   });
 
   return (
@@ -916,6 +924,7 @@ const SignatoryList = () => {
           <h2 className="text-7xl font-black text-gray-900 tracking-tighter leading-none">{t.signatories_title}</h2>
           <p className="text-gray-400 font-bold uppercase tracking-[0.3em] text-[10px]">{t.signatories_subtitle}</p>
         </div>
+
 
         <div className="flex flex-col items-center space-y-6">
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">
@@ -944,6 +953,20 @@ const SignatoryList = () => {
                 );
               })}
             </select>
+
+            <button
+              onClick={() => setSortBy(sortBy === 'alphabetical' ? 'date' : 'alphabetical')}
+              className="bg-white border-2 border-gray-100 rounded-full px-6 text-[11px] font-black uppercase tracking-widest hover:border-[#d52b27] transition-all h-12 flex items-center space-x-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {sortBy === 'alphabetical' ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                )}
+              </svg>
+              <span>{sortBy === 'alphabetical' ? (lang === Language.EN ? 'A-Z' : 'A-Z') : (lang === Language.EN ? 'Newest' : 'Récent')}</span>
+            </button>
           </div>
 
           <div className="flex flex-col items-center">
