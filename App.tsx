@@ -264,7 +264,7 @@ const PetitionForm = () => {
   return (
     <div className="max-w-3xl mx-auto py-24 px-6 space-y-24">
       <div className="space-y-12">
-        <h2 className="text-5xl font-black text-gray-900 text-center tracking-tighter">The Petition</h2>
+        <h2 className="text-4xl md:text-5xl font-black text-gray-900 text-center tracking-tighter uppercase">{t.petition_title}</h2>
         <PetitionContent />
       </div>
 

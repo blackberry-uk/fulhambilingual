@@ -69,6 +69,7 @@ export const TRANSLATIONS = {
     reconsent_intro: "Thank you for previously signing. We are now asking for explicit consent to display names and comments publicly to show the strength of our community.",
     signatures_count: "people have already signed",
     read_the_petition: "Read the Petition",
+    petition_title: "FUTURE OF THE FULHAM BILINGUAL PARTNERSHIP",
     petition_body: `To:
 The Leadership of the Lycée Français Charles de Gaulle
 The French Embassy and Cultural Services in the United Kingdom
@@ -158,6 +159,7 @@ Parents, families, alumni, and supporters of Fulham Bilingual School`,
     reconsent_intro: "Merci d'avoir signé précédemment. Nous demandons maintenant un consentement explicite pour afficher les noms et commentaires publiquement afin de montrer la force de notre communauté.",
     signatures_count: "personnes ont déjà signé",
     read_the_petition: "Lire la pétition",
+    petition_title: "AVENIR DU PARTENARIAT FULHAM BILINGUAL",
     petition_body: `À l’attention de :
 La Direction du Lycée Français Charles de Gaulle
 L’Ambassade de France et les Services Culturels au Royaume-Uni
