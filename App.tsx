@@ -4,6 +4,7 @@ import { RELATIONSHIP_LABELS_EN, RELATIONSHIP_LABELS_FR, TRANSLATIONS } from './
 import { Language, RelationshipKey, Person, PetitionRecord, Testimonial, ForumThread } from './types';
 import { storage } from './services/storage';
 import { translateText, detectLanguage, summarizeThread } from './services/gemini';
+import Analytics from './Analytics';
 
 // --- Context & Navigation ---
 
@@ -1130,6 +1131,7 @@ const MainContent = () => {
       {view === 'forum' && <Forum />}
       {view === 'reconsent' && <ReconsentFlow />}
       {view === 'signatories' && <SignatoryList />}
+      {view === 'analytics' && <Analytics />}
 
       <footer className="py-24 px-6 text-center border-t border-gray-50">
         <div className="text-[11px] font-black uppercase tracking-[0.5em] text-gray-300">

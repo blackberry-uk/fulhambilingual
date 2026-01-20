@@ -312,6 +312,34 @@ export const storage = {
     }
   },
 
+  getAllPersons: async () => {
+    if (isSupabaseReady()) {
+      const { data, error } = await supabase!
+        .from('persons')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } else {
+      return getLocal('persons');
+    }
+  },
+
+  getAllPetitionRecords: async () => {
+    if (isSupabaseReady()) {
+      const { data, error } = await supabase!
+        .from('petition_records')
+        .select('*')
+        .order('submission_timestamp', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } else {
+      return getLocal('petition_records');
+    }
+  },
+
   async getSiteContent(key: string): Promise<{ en: string; fr: string } | null> {
     if (isSupabaseReady()) {
       const { data, error } = await supabase!
