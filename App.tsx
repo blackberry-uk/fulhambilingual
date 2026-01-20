@@ -302,26 +302,24 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
           throw new Error(err.error || 'Update failed');
         }
 
-        // 2. If there is a comment, update/create the testimonial (and re-translate)
+
+        // 2. If there is a comment, update the testimonial metadata (but DON'T re-translate to preserve manual corrections)
         if (formData.comment) {
-          const detected = await detectLanguage(formData.comment);
-          const target = detected === Language.EN ? Language.FR : Language.EN;
-          const translated = await translateText(formData.comment, detected, target);
-
           // Use Anonymous if consent is false
-          const displayName = formData.consent ? formData.full_name : (detected === Language.EN ? 'Anonymous' : 'Anonyme');
+          const displayName = formData.consent ? formData.full_name : 'Anonymous';
 
-          // Try to update existing testimonial, or create new one if it doesn't exist
+          // Try to update existing testimonial (only update name and moderation status, preserve translation)
           try {
             await storage.updateTestimonial(formData.full_name, {
               person_name: displayName,
-              content: formData.comment,
-              content_translated: translated,
-              language: detected,
               is_moderated: true
             });
           } catch (e) {
-            // If update fails (testimonial doesn't exist), create it
+            // If update fails (testimonial doesn't exist), create it with translation
+            const detected = await detectLanguage(formData.comment);
+            const target = detected === Language.EN ? Language.FR : Language.EN;
+            const translated = await translateText(formData.comment, detected, target);
+
             await storage.addTestimonial({
               id: '',
               person_name: displayName,
