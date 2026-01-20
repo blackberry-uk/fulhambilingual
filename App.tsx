@@ -213,7 +213,7 @@ const Hero = () => {
             onClick={() => {
               setView('petition');
               setTimeout(() => {
-                document.getElementById('sign-form-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                document.getElementById('petition-form-title')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }, 100);
             }}
             className="w-full md:w-auto px-12 py-6 bg-[#d52b27] text-white font-black rounded-full shadow-xl hover:shadow-red-200 hover:-translate-y-1 btn-transition text-lg uppercase tracking-widest"
@@ -501,7 +501,7 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
         id="sign-form-container"
         className={`bg-white rounded-[40px] shadow-2xl shadow-red-900/5 border border-gray-100 p-10 md:p-20 animate-in fade-in slide-in-from-bottom-8 duration-1000`}
       >
-        <h2 className="text-4xl md:text-6xl font-black mb-16 text-center text-gray-900 tracking-tighter uppercase leading-none">
+        <h2 id="petition-form-title" className="text-4xl md:text-6xl font-black mb-16 text-center text-gray-900 tracking-tighter uppercase leading-none">
           {isEdit ? t.request_code_title : t.petition_action}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-12">
@@ -1216,7 +1216,7 @@ const MainContent = () => {
                 onClick={() => {
                   setView('petition');
                   setTimeout(() => {
-                    document.getElementById('sign-form-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    document.getElementById('petition-form-title')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }, 100);
                 }}
                 className="group flex flex-col items-center mx-auto space-y-4"
@@ -1240,7 +1240,7 @@ const MainContent = () => {
                   onClick={() => {
                     setShowManageSignature(false);
                     setTimeout(() => {
-                      document.getElementById('sign-form-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      document.getElementById('petition-form-title')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }, 100);
                   }}
                   className="flex items-center space-x-2 text-gray-500 hover:text-gray-900 font-bold transition-all"
