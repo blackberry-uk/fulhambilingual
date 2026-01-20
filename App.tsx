@@ -344,6 +344,7 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
               });
             }
           } catch (e) {
+            console.error('Failed to update testimonial:', e);
             // If update fails (testimonial doesn't exist), create it with translation
             const detected = await detectLanguage(formData.comment);
             const target = detected === Language.EN ? Language.FR : Language.EN;
