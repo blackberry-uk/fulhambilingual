@@ -1039,9 +1039,14 @@ const SignatoryList = () => {
                 </div>
               </div>
             </div>
-            <span className="text-gray-500 text-[11px] font-bold uppercase tracking-widest mt-4 md:mt-0 bg-gray-50 px-3 py-1 rounded-full md:bg-transparent md:px-0">
-              {new Date(s.timestamp).toLocaleDateString(lang === Language.EN ? 'en-GB' : 'fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}, {new Date(s.timestamp).toLocaleTimeString(lang === Language.EN ? 'en-GB' : 'fr-FR', { hour: '2-digit', minute: '2-digit' })}
-            </span>
+            <div className="flex flex-col items-end text-right mt-4 md:mt-0">
+              <span className="text-gray-500 text-[11px] font-bold uppercase tracking-widest bg-gray-50 px-3 py-1 rounded-full md:bg-transparent md:px-0">
+                {new Date(s.timestamp).toLocaleDateString(lang === Language.EN ? 'en-GB' : 'fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}
+              </span>
+              <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mt-1">
+                {new Date(s.timestamp).toLocaleTimeString(lang === Language.EN ? 'en-GB' : 'fr-FR', { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            </div>
           </div>
         ))}
         {sortedSigs.length === 0 && (
