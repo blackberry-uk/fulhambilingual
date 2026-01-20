@@ -741,7 +741,7 @@ const Testimonials = () => {
   const t = TRANSLATIONS[lang];
   const [items, setItems] = useState<(Testimonial & { relationship: string[], years: string[] })[]>([]);
   const [filter, setFilter] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<'alphabetical' | 'alphabetical-reverse' | 'date' | 'date-reverse'>('alphabetical');
+  const [sortBy, setSortBy] = useState<'alphabetical' | 'alphabetical-reverse' | 'date' | 'date-reverse'>('date');
 
   useEffect(() => {
     storage.getTestimonials().then(data => {
@@ -942,7 +942,7 @@ const SignatoryList = () => {
   const t = TRANSLATIONS[lang];
   const [sigs, setSigs] = useState<{ name: string, timestamp: string, relationship: string[], years: string[], hasTestimonial: boolean, testimonialId?: string, consent: boolean }[]>([]);
   const [filter, setFilter] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<'alphabetical' | 'alphabetical-reverse' | 'date' | 'date-reverse'>('alphabetical');
+  const [sortBy, setSortBy] = useState<'alphabetical' | 'alphabetical-reverse' | 'date' | 'date-reverse'>('date');
 
   useEffect(() => {
     storage.getPublicSignatories().then(setSigs);
