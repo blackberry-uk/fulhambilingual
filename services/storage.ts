@@ -105,15 +105,17 @@ export const storage = {
   },
   updateTestimonial: async (personName: string, updates: Partial<Testimonial>) => {
     if (isSupabaseReady()) {
+      // Only include fields that are actually provided
+      const updateData: any = {};
+      if (updates.person_name !== undefined) updateData.person_name = updates.person_name;
+      if (updates.content !== undefined) updateData.content = updates.content;
+      if (updates.content_translated !== undefined) updateData.content_translated = updates.content_translated;
+      if (updates.language !== undefined) updateData.language = updates.language;
+      if (updates.is_moderated !== undefined) updateData.is_moderated = updates.is_moderated;
+
       const { data, error } = await supabase!
         .from('testimonials')
-        .update({
-          person_name: updates.person_name,
-          content: updates.content,
-          content_translated: updates.content_translated,
-          language: updates.language,
-          is_moderated: updates.is_moderated
-        })
+        .update(updateData)
         .eq('person_name', personName)
         .select();
 

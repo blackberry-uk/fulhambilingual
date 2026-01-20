@@ -303,17 +303,37 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
         }
 
 
-        // 2. If there is a comment, update the testimonial metadata (but DON'T re-translate to preserve manual corrections)
+        // 2. If there is a comment, update the testimonial
         if (formData.comment) {
           // Use Anonymous if consent is false
           const displayName = formData.consent ? formData.full_name : 'Anonymous';
 
-          // Try to update existing testimonial (only update name and moderation status, preserve translation)
+          // Check if the comment text actually changed
+          const originalComment = initialData?.petitionRecord?.supporting_comment || '';
+          const commentChanged = formData.comment !== originalComment;
+
+          // Try to update existing testimonial
           try {
-            await storage.updateTestimonial(formData.full_name, {
-              person_name: displayName,
-              is_moderated: true
-            });
+            if (commentChanged) {
+              // Comment changed - re-translate
+              const detected = await detectLanguage(formData.comment);
+              const target = detected === Language.EN ? Language.FR : Language.EN;
+              const translated = await translateText(formData.comment, detected, target);
+
+              await storage.updateTestimonial(formData.full_name, {
+                person_name: displayName,
+                content: formData.comment,
+                content_translated: translated,
+                language: detected,
+                is_moderated: true
+              });
+            } else {
+              // Comment unchanged - only update name and moderation, preserve translation
+              await storage.updateTestimonial(formData.full_name, {
+                person_name: displayName,
+                is_moderated: true
+              });
+            }
           } catch (e) {
             // If update fails (testimonial doesn't exist), create it with translation
             const detected = await detectLanguage(formData.comment);
