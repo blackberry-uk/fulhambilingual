@@ -188,22 +188,65 @@
                     });
                 });
 
+                // Calculate year groups with fuzzy matching
+                const yearGroupCounts = {};
+                const YEAR_GROUP_ORDER = ['PS', 'MS', 'CP', 'CE1', 'CE2', 'CM1', 'CM2', '6eme', '5eme', '4eme', '3eme', '2de', '1ere', 'Terminale'];
+
+                function normalizeYearGroup(input) {
+                    if (!input) return null;
+                    const normalized = input.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
+
+                    // Fuzzy matching rules
+                    if (normalized.includes('GSA') || normalized === 'PS') return 'PS';
+                    if (normalized.includes('MSA') || normalized === 'MS') return 'MS';
+                    if (normalized.includes('GS')) return 'MS'; // Grande Section = MS
+                    if (normalized === 'CP') return 'CP';
+                    if (normalized === 'CE1') return 'CE1';
+                    if (normalized === 'CE2') return 'CE2';
+                    if (normalized === 'CM1') return 'CM1';
+                    if (normalized === 'CM2') return 'CM2';
+                    if (normalized.includes('6') || normalized.includes('SIXIEME')) return '6eme';
+                    if (normalized.includes('5') || normalized.includes('CINQUIEME')) return '5eme';
+                    if (normalized.includes('4') || normalized.includes('QUATRIEME')) return '4eme';
+                    if (normalized.includes('3') || normalized.includes('TROISIEME')) return '3eme';
+                    if (normalized.includes('2') || normalized.includes('SECONDE')) return '2de';
+                    if (normalized.includes('1') || normalized.includes('PREMIERE')) return '1ere';
+                    if (normalized.includes('TERM') || normalized.includes('TERMINALE')) return 'Terminale';
+
+                    return null;
+                }
+
+                persons.forEach(person => {
+                    person.student_year_groups?.forEach(year => {
+                        const normalized = normalizeYearGroup(year);
+                        if (normalized) {
+                            yearGroupCounts[normalized] = (yearGroupCounts[normalized] || 0) + 1;
+                        }
+                    });
+                });
+
                 const withConsent = records.filter(r => r.consent_public_use).length;
                 const consentRate = ((withConsent / records.length) * 100).toFixed(1);
 
                 const enTestimonials = testimonials.filter(t => t.language === 'EN').length;
                 const frTestimonials = testimonials.filter(t => t.language === 'FR').length;
 
-                renderDashboard(persons.length, consentRate, enTestimonials, frTestimonials, relationshipCounts);
+                renderDashboard(persons.length, consentRate, enTestimonials, frTestimonials, relationshipCounts, yearGroupCounts);
             } catch (err) {
                 document.getElementById('content').innerHTML = `<div class="loading" style="color: #ef4444;">Error loading data: ${err.message}</div>`;
             }
         }
 
-        function renderDashboard(total, consentRate, enTestimonials, frTestimonials, relationships) {
-            const sorted = Object.entries(relationships).sort((a, b) => b[1] - a[1]);
+        function renderDashboard(total, consentRate, enTestimonials, frTestimonials, relationships, yearGroups) {
+            const sortedRelationships = Object.entries(relationships).sort((a, b) => b[1] - a[1]);
 
-            const barsHTML = sorted.map(([name, count]) => {
+            // Sort year groups by predefined order
+            const YEAR_GROUP_ORDER = ['PS', 'MS', 'CP', 'CE1', 'CE2', 'CM1', 'CM2', '6eme', '5eme', '4eme', '3eme', '2de', '1ere', 'Terminale'];
+            const sortedYearGroups = YEAR_GROUP_ORDER
+                .filter(year => yearGroups[year])
+                .map(year => [year, yearGroups[year]]);
+
+            const relationshipBarsHTML = sortedRelationships.map(([name, count]) => {
                 const percentage = ((count / total) * 100).toFixed(1);
                 return `
                     <div class="bar-item">
@@ -213,6 +256,22 @@
                         </div>
                         <div class="bar-track">
                             <div class="bar-fill" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const totalYearGroups = Object.values(yearGroups).reduce((sum, count) => sum + count, 0);
+            const yearGroupBarsHTML = sortedYearGroups.map(([name, count]) => {
+                const percentage = ((count / totalYearGroups) * 100).toFixed(1);
+                return `
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span class="bar-name">${name}</span>
+                            <span class="bar-count">${count} (${percentage}%)</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill" style="width: ${percentage}%" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);"></div>
                         </div>
                     </div>
                 `;
@@ -234,12 +293,51 @@
                     </div>
                 </div>
 
-                <div class="chart-container">
-                    <h2 class="chart-title">Relationship to School</h2>
-                    ${barsHTML}
+                <div style="margin-bottom: 2rem;">
+                    <div style="display: flex; gap: 1rem; border-bottom: 2px solid #e5e7eb;">
+                        <button onclick="showTab('relationships')" id="tab-relationships" class="tab-button active" style="padding: 1rem 2rem; font-weight: 700; border: none; background: none; cursor: pointer; border-bottom: 3px solid #d52b27; color: #d52b27;">
+                            Relationships
+                        </button>
+                        <button onclick="showTab('yeargroups')" id="tab-yeargroups" class="tab-button" style="padding: 1rem 2rem; font-weight: 700; border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent; color: #6b7280;">
+                            Year Groups
+                        </button>
+                    </div>
+                </div>
+
+                <div id="tab-content-relationships" class="tab-content">
+                    <div class="chart-container">
+                        <h2 class="chart-title">Relationship to School</h2>
+                        ${relationshipBarsHTML}
+                    </div>
+                </div>
+
+                <div id="tab-content-yeargroups" class="tab-content" style="display: none;">
+                    <div class="chart-container">
+                        <h2 class="chart-title">Year Groups Distribution</h2>
+                        <p style="color: #6b7280; font-size: 14px; margin-bottom: 1.5rem;">Total students across all year groups: ${totalYearGroups}</p>
+                        ${yearGroupBarsHTML}
+                    </div>
                 </div>
             `;
         }
+
+        window.showTab = function (tabName) {
+            // Update buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.style.borderBottom = '3px solid transparent';
+                btn.style.color = '#6b7280';
+                btn.classList.remove('active');
+            });
+            document.getElementById(`tab-${tabName}`).style.borderBottom = '3px solid #d52b27';
+            document.getElementById(`tab-${tabName}`).style.color = '#d52b27';
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            document.getElementById(`tab-content-${tabName}`).style.display = 'block';
+        };
 
         loadData();
     </script>
