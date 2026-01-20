@@ -33,20 +33,23 @@ const PetitionContent = () => {
   return (
     <div className="space-y-8">
       <div className="flex justify-center p-1 bg-gray-100 rounded-full w-fit mx-auto mb-8">
-        <button 
+        <button
           onClick={() => setActiveLang(Language.EN)}
           className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeLang === Language.EN ? 'bg-white text-[#d52b27] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
         >
           English
         </button>
-        <button 
+        <button
           onClick={() => setActiveLang(Language.FR)}
           className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeLang === Language.FR ? 'bg-white text-[#d52b27] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
         >
           Français
         </button>
       </div>
-      <div className="prose prose-xl max-w-3xl mx-auto text-gray-800 leading-relaxed font-medium text-balance animate-in fade-in duration-700">
+      <div
+        className="prose prose-xl max-w-3xl mx-auto text-gray-800 leading-relaxed font-medium text-balance animate-in fade-in duration-700"
+        style={{ whiteSpace: 'pre-line' }}
+      >
         {TRANSLATIONS[activeLang].petition_body}
       </div>
     </div>
@@ -65,10 +68,25 @@ const Navbar = () => {
         <button onClick={() => setView('home')} className="group flex flex-col">
           <span className="font-black text-[#d52b27] text-lg uppercase tracking-tighter leading-none group-hover:opacity-60 transition-opacity">FB COMMUNITY</span>
         </button>
-        <div className="hidden md:flex items-center space-x-10">
-          <button onClick={() => setView('petition')} className={`text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:text-[#d52b27] ${view === 'petition' ? 'text-[#d52b27]' : 'text-gray-400'}`}>{t.nav_petition}</button>
-          <button onClick={() => setView('testimonials')} className={`text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:text-[#d52b27] ${view === 'testimonials' ? 'text-[#d52b27]' : 'text-gray-400'}`}>{t.nav_testimonials}</button>
-          <button onClick={() => setView('forum')} className={`text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:text-[#d52b27] ${view === 'forum' ? 'text-[#d52b27]' : 'text-gray-400'}`}>{t.nav_forum}</button>
+        <div className="hidden md:flex items-center space-x-2">
+          <button
+            onClick={() => setView('petition')}
+            className={`px-6 py-2 rounded-full text-[13px] font-bold transition-all ${view === 'petition' ? 'bg-[#d52b27] text-white shadow-md' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`}
+          >
+            {t.nav_petition}
+          </button>
+          <button
+            onClick={() => setView('testimonials')}
+            className={`px-6 py-2 rounded-full text-[13px] font-bold transition-all ${view === 'testimonials' ? 'bg-[#d52b27] text-white shadow-md' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`}
+          >
+            {t.nav_testimonials}
+          </button>
+          <button
+            onClick={() => setView('forum')}
+            className={`px-6 py-2 rounded-full text-[13px] font-bold transition-all ${view === 'forum' ? 'bg-[#d52b27] text-white shadow-md' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'}`}
+          >
+            {t.nav_forum}
+          </button>
         </div>
         <div className="flex items-center space-x-4">
           <div className="bg-gray-100 p-1 rounded-full flex">
@@ -84,7 +102,7 @@ const Navbar = () => {
 const Disclaimer = () => {
   const { lang } = useApp();
   return (
-    <div className="bg-white text-gray-400 text-[9px] uppercase tracking-[0.3em] py-4 px-6 text-center font-bold border-b border-gray-50">
+    <div className="bg-gray-50 text-gray-500 text-[15px] py-4 px-6 text-center font-medium border-b border-gray-100">
       {TRANSLATIONS[lang].disclaimer}
     </div>
   );
@@ -105,19 +123,19 @@ const Hero = () => {
             {t.hero.split(' ').slice(0, 2).join(' ')} <span className="text-[#d52b27]">{t.hero.split(' ').slice(2).join(' ')}</span>
           </h1>
         </div>
-        
+
         <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-          <button 
-            onClick={() => setView('petition')} 
+          <button
+            onClick={() => setView('petition')}
             className="w-full md:w-auto px-12 py-6 bg-[#d52b27] text-white font-black rounded-full shadow-xl hover:shadow-red-200 hover:-translate-y-1 btn-transition text-lg uppercase tracking-widest"
           >
             {t.petition_action}
           </button>
-          <button 
+          <button
             onClick={() => {
               const el = document.getElementById('mission-section');
               el?.scrollIntoView({ behavior: 'smooth' });
-            }} 
+            }}
             className="w-full md:w-auto px-12 py-6 bg-white text-gray-900 border border-gray-200 font-black rounded-full hover:bg-gray-50 hover:-translate-y-1 btn-transition text-lg uppercase tracking-widest"
           >
             {t.read_the_petition}
@@ -142,7 +160,7 @@ const PetitionForm = () => {
   const t = TRANSLATIONS[lang];
   const labels = lang === Language.EN ? RELATIONSHIP_LABELS_EN : RELATIONSHIP_LABELS_FR;
   const formRef = useRef<HTMLDivElement>(null);
-  
+
   const [formData, setFormData] = useState({
     full_name: '',
     email_address: '',
@@ -154,17 +172,17 @@ const PetitionForm = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const isCurrentStudentOrParent = formData.relationships.some(r => 
+  const isCurrentStudentOrParent = formData.relationships.some(r =>
     [RelationshipKey.LYCEE_PARENT, RelationshipKey.HOLY_CROSS_PARENT, RelationshipKey.LYCEE_ALUMNI_OVER_16, RelationshipKey.HOLY_CROSS_ALUMNI_OVER_16, RelationshipKey.CURRENT_SCHOOL_EMPLOYEE].includes(r)
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       const personData = await storage.addPerson({
-        id: '', 
+        id: '',
         full_name: formData.full_name,
         email_address: formData.email_address,
         relationship_to_school: formData.relationships,
@@ -174,7 +192,7 @@ const PetitionForm = () => {
       });
 
       const record: PetitionRecord = {
-        id: '', 
+        id: '',
         person_id: personData.id,
         petition_support: true,
         supporting_comment: formData.comment,
@@ -186,10 +204,10 @@ const PetitionForm = () => {
         const detected = await detectLanguage(formData.comment);
         const target = detected === Language.EN ? Language.FR : Language.EN;
         const translated = await translateText(formData.comment, detected, target);
-        
+
         record.comment_en = detected === Language.EN ? formData.comment : translated;
         record.comment_fr = detected === Language.FR ? formData.comment : translated;
-        
+
         await storage.addTestimonial({
           id: '',
           person_name: formData.full_name,
@@ -246,22 +264,22 @@ const PetitionForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div className="space-y-2">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t.full_name}</label>
-              <input 
+              <input
                 required
-                type="text" 
+                type="text"
                 value={formData.full_name}
-                onChange={e => setFormData({...formData, full_name: e.target.value})}
-                className="w-full border border-gray-100 rounded-2xl p-5 bg-gray-50/50 outline-none font-bold text-lg" 
+                onChange={e => setFormData({ ...formData, full_name: e.target.value })}
+                className="w-full border border-gray-100 rounded-2xl p-5 bg-gray-50/50 outline-none font-bold text-lg"
               />
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t.email}</label>
-              <input 
+              <input
                 required
-                type="email" 
+                type="email"
                 value={formData.email_address}
-                onChange={e => setFormData({...formData, email_address: e.target.value})}
-                className="w-full border border-gray-100 rounded-2xl p-5 bg-gray-50/50 outline-none font-bold text-lg" 
+                onChange={e => setFormData({ ...formData, email_address: e.target.value })}
+                className="w-full border border-gray-100 rounded-2xl p-5 bg-gray-50/50 outline-none font-bold text-lg"
               />
             </div>
           </div>
@@ -274,11 +292,10 @@ const PetitionForm = () => {
                   key={key}
                   type="button"
                   onClick={() => toggleRelationship(key as RelationshipKey)}
-                  className={`text-left p-5 rounded-2xl text-xs transition-all border font-bold ${
-                    formData.relationships.includes(key as RelationshipKey)
-                      ? 'bg-[#d52b27] text-white border-[#d52b27] shadow-md'
-                      : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
-                  }`}
+                  className={`text-left p-5 rounded-2xl text-xs transition-all border font-bold ${formData.relationships.includes(key as RelationshipKey)
+                    ? 'bg-[#d52b27] text-white border-[#d52b27] shadow-md'
+                    : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
+                    }`}
                 >
                   {label}
                 </button>
@@ -289,43 +306,43 @@ const PetitionForm = () => {
           {isCurrentStudentOrParent && (
             <div className="animate-in slide-in-from-top-4 space-y-2">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t.year_groups}</label>
-              <input 
+              <input
                 required
-                type="text" 
+                type="text"
                 value={formData.year_groups}
-                onChange={e => setFormData({...formData, year_groups: e.target.value})}
+                onChange={e => setFormData({ ...formData, year_groups: e.target.value })}
                 placeholder="e.g. GSA, CP, CE1..."
-                className="w-full border border-gray-100 rounded-2xl p-5 bg-gray-50/50 outline-none font-bold text-lg" 
+                className="w-full border border-gray-100 rounded-2xl p-5 bg-gray-50/50 outline-none font-bold text-lg"
               />
             </div>
           )}
 
           <div className="space-y-2">
             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t.comment}</label>
-            <textarea 
+            <textarea
               rows={4}
               value={formData.comment}
-              onChange={e => setFormData({...formData, comment: e.target.value})}
+              onChange={e => setFormData({ ...formData, comment: e.target.value })}
               className="w-full border border-gray-100 rounded-2xl p-5 bg-gray-50/50 outline-none font-medium text-lg"
             ></textarea>
           </div>
 
           <div className="flex items-center space-x-4 bg-gray-50 p-8 rounded-2xl">
-            <input 
+            <input
               required
-              type="checkbox" 
+              type="checkbox"
               id="consent"
               checked={formData.consent}
-              onChange={e => setFormData({...formData, consent: e.target.checked})}
-              className="w-6 h-6 rounded-lg text-[#d52b27] focus:ring-[#d52b27] cursor-pointer" 
+              onChange={e => setFormData({ ...formData, consent: e.target.checked })}
+              className="w-6 h-6 rounded-lg text-[#d52b27] focus:ring-[#d52b27] cursor-pointer"
             />
             <label htmlFor="consent" className="text-xs text-gray-600 font-bold cursor-pointer">
               {t.consent}
             </label>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading || formData.relationships.length === 0}
             className="w-full py-8 bg-[#d52b27] text-white font-black text-xl rounded-full shadow-2xl hover:bg-gray-900 transition-all disabled:opacity-20 disabled:grayscale uppercase tracking-widest"
           >
@@ -379,7 +396,7 @@ const Testimonials = () => {
 const SignatoryList = () => {
   const { lang } = useApp();
   const t = TRANSLATIONS[lang];
-  const [sigs, setSigs] = useState<{name: string, timestamp: string}[]>([]);
+  const [sigs, setSigs] = useState<{ name: string, timestamp: string }[]>([]);
 
   useEffect(() => {
     storage.getPublicSignatories().then(setSigs);
@@ -443,12 +460,12 @@ const Forum = () => {
 
       <div className="space-y-12">
         <form onSubmit={handlePost} className="space-y-6">
-          <input 
+          <input
             type="text" placeholder="Topic Title" value={newTitle}
             onChange={e => setNewTitle(e.target.value)}
             className="w-full border-b-2 border-gray-100 py-6 outline-none font-black text-3xl tracking-tighter placeholder:text-gray-200 focus:border-[#d52b27] transition-all"
           />
-          <textarea 
+          <textarea
             placeholder="Share your thoughts..." rows={3} value={newContent}
             onChange={e => setNewContent(e.target.value)}
             className="w-full border-b border-gray-100 py-6 outline-none text-xl font-medium placeholder:text-gray-200 focus:border-[#d52b27] transition-all"
@@ -505,14 +522,14 @@ const ReconsentFlow = () => {
         <form onSubmit={handleSubmit} className="text-left space-y-10">
           <div className="space-y-2">
             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t.email}</label>
-            <input 
+            <input
               required type="email" value={email} onChange={e => setEmail(e.target.value)}
-              className="w-full border border-gray-100 rounded-2xl p-5 bg-gray-50/50 outline-none font-black text-lg" 
+              className="w-full border border-gray-100 rounded-2xl p-5 bg-gray-50/50 outline-none font-black text-lg"
             />
           </div>
           <div className="space-y-2">
             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">New Comment</label>
-            <textarea 
+            <textarea
               value={comment} onChange={e => setComment(e.target.value)}
               className="w-full border border-gray-100 rounded-2xl p-5 bg-gray-50/50 outline-none font-medium text-lg"
             ></textarea>
@@ -546,12 +563,12 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 const MainContent = () => {
   const { view, setView, lang } = useApp();
-  
+
   return (
     <main className="min-h-screen selection:bg-red-100 selection:text-red-900">
       <Navbar />
       <Disclaimer />
-      
+
       {view === 'home' && (
         <>
           <Hero />
@@ -559,8 +576,8 @@ const MainContent = () => {
             <h2 className="text-6xl md:text-8xl font-black text-gray-900 tracking-tighter text-balance">The Future is Bilingual</h2>
             <PetitionContent />
             <div className="pt-10">
-              <button 
-                onClick={() => setView('petition')} 
+              <button
+                onClick={() => setView('petition')}
                 className="group flex flex-col items-center mx-auto space-y-4"
               >
                 <div className="w-24 h-24 bg-[#d52b27] rounded-full flex items-center justify-center text-white text-4xl shadow-2xl hover:scale-110 transition-transform cursor-pointer">
@@ -572,7 +589,7 @@ const MainContent = () => {
           </section>
         </>
       )}
-      
+
       {view === 'petition' && <PetitionForm />}
       {view === 'testimonials' && <Testimonials />}
       {view === 'forum' && <Forum />}
