@@ -735,6 +735,7 @@ const Testimonials = () => {
   const t = TRANSLATIONS[lang];
   const [items, setItems] = useState<(Testimonial & { relationship: string[], years: string[] })[]>([]);
   const [filter, setFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'alphabetical' | 'alphabetical-reverse' | 'date' | 'date-reverse'>('alphabetical');
 
   useEffect(() => {
     storage.getTestimonials().then(data => {
@@ -758,7 +759,17 @@ const Testimonials = () => {
   const filteredItems = (filter === 'all'
     ? items
     : items.filter(i => i.relationship.some(r => r.includes(filter.split(' - ')[0])))
-  ).sort((a, b) => a.person_name.localeCompare(b.person_name));
+  ).sort((a, b) => {
+    // When sorting by date
+    if (sortBy === 'date' || sortBy === 'date-reverse') {
+      const diff = new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      return sortBy === 'date-reverse' ? -diff : diff;
+    } else {
+      // When sorting alphabetically
+      const comparison = a.person_name.localeCompare(b.person_name);
+      return sortBy === 'alphabetical-reverse' ? -comparison : comparison;
+    }
+  });
 
   return (
     <div className="max-w-6xl mx-auto py-24 px-6 space-y-20 animate-in fade-in duration-700">
@@ -786,17 +797,45 @@ const Testimonials = () => {
             </select>
           </div>
 
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+            <button
+              onClick={() => setSortBy(sortBy === 'alphabetical' ? 'alphabetical-reverse' : 'alphabetical')}
+              className={`px-8 rounded-full text-[11px] font-black uppercase tracking-widest transition-all border-2 h-12 flex items-center justify-center space-x-2 ${sortBy === 'alphabetical' || sortBy === 'alphabetical-reverse' ? 'bg-[#d52b27] text-white border-[#d52b27] shadow-xl shadow-red-100' : 'bg-white text-[#d52b27] border-red-100 hover:border-[#d52b27]'}`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+              </svg>
+              <span>{sortBy === 'alphabetical-reverse' ? 'Z-A' : 'A-Z'}</span>
+            </button>
+
+            <button
+              onClick={() => setSortBy(sortBy === 'date' ? 'date-reverse' : 'date')}
+              className={`px-8 rounded-full text-[11px] font-black uppercase tracking-widest transition-all border-2 h-12 flex items-center justify-center space-x-2 ${sortBy === 'date' || sortBy === 'date-reverse' ? 'bg-[#d52b27] text-white border-[#d52b27] shadow-xl shadow-red-100' : 'bg-white text-[#d52b27] border-red-100 hover:border-[#d52b27]'}`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>
+                {sortBy === 'date-reverse'
+                  ? (lang === Language.EN ? 'Oldest' : 'Ancien')
+                  : (lang === Language.EN ? 'Newest' : 'Récent')
+                }
+              </span>
+            </button>
+
             <button
               onClick={() => setFilter(filter === 'Alumni (over 16)' ? 'all' : 'Alumni (over 16)')}
               className={`px-8 rounded-full text-[11px] font-black uppercase tracking-widest transition-all border-2 h-12 flex items-center justify-center ${filter === 'Alumni (over 16)' ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl shadow-indigo-100' : 'bg-white text-indigo-600 border-indigo-100 hover:border-indigo-600'}`}
             >
               Alumni - Anciens Élèves
             </button>
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-3">
+          </div>
+
+          {filter === 'Alumni (over 16)' && (
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest animate-pulse">
               {t.alumni_subtitle}
             </span>
-          </div>
+          )}
         </div>
       </div>
 
