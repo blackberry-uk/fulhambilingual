@@ -301,18 +301,36 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
           throw new Error(err.error || 'Update failed');
         }
 
-        // 2. If there is a comment and consent, update the testimonial too (and re-translate)
-        if (formData.comment && formData.consent) {
+        // 2. If there is a comment, update/create the testimonial (and re-translate)
+        if (formData.comment) {
           const detected = await detectLanguage(formData.comment);
           const target = detected === Language.EN ? Language.FR : Language.EN;
           const translated = await translateText(formData.comment, detected, target);
 
-          await storage.updateTestimonial(formData.full_name, {
-            content: formData.comment,
-            content_translated: translated,
-            language: detected,
-            is_moderated: true // Edits from verified users are auto-moderated
-          });
+          // Use Anonymous if consent is false
+          const displayName = formData.consent ? formData.full_name : (detected === Language.EN ? 'Anonymous' : 'Anonyme');
+
+          // Try to update existing testimonial, or create new one if it doesn't exist
+          try {
+            await storage.updateTestimonial(formData.full_name, {
+              person_name: displayName,
+              content: formData.comment,
+              content_translated: translated,
+              language: detected,
+              is_moderated: true
+            });
+          } catch (e) {
+            // If update fails (testimonial doesn't exist), create it
+            await storage.addTestimonial({
+              id: '',
+              person_name: displayName,
+              content: formData.comment,
+              content_translated: translated,
+              is_moderated: true,
+              language: detected,
+              created_at: new Date().toISOString()
+            });
+          }
         }
 
         refreshStats();
@@ -347,7 +365,7 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
         submission_timestamp: new Date().toISOString()
       };
 
-      if (formData.comment && formData.consent) {
+      if (formData.comment) {
         const detected = await detectLanguage(formData.comment);
         const target = detected === Language.EN ? Language.FR : Language.EN;
         const translated = await translateText(formData.comment, detected, target);
@@ -355,9 +373,12 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
         record.comment_en = detected === Language.EN ? formData.comment : translated;
         record.comment_fr = detected === Language.FR ? formData.comment : translated;
 
+        // Create testimonial even if consent is false, but use "Anonymous" as the name
+        const displayName = formData.consent ? formData.full_name : (detected === Language.EN ? 'Anonymous' : 'Anonyme');
+
         await storage.addTestimonial({
           id: '',
-          person_name: formData.full_name,
+          person_name: displayName,
           content: formData.comment,
           content_translated: translated,
           is_moderated: true,

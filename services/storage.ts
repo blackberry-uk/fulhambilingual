@@ -108,6 +108,7 @@ export const storage = {
       const { data, error } = await supabase!
         .from('testimonials')
         .update({
+          person_name: updates.person_name,
           content: updates.content,
           content_translated: updates.content_translated,
           language: updates.language,
