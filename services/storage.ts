@@ -205,12 +205,12 @@ export const storage = {
 
       const { data: persons } = await supabase!
         .from('persons')
-        .select('full_name, relationship_to_school, student_year_groups');
+        .select('id, full_name, relationship_to_school, student_year_groups');
 
-      const personMap = new Map(persons?.map(p => [p.full_name, p]) || []);
+      const personMap = new Map(persons?.map(p => [p.id, p]) || []);
 
       return testimonials.map(t => {
-        const p = personMap.get(t.person_name);
+        const p = personMap.get(t.person_id);
         return {
           ...t,
           relationship: p?.relationship_to_school || [],
@@ -221,7 +221,7 @@ export const storage = {
       const testimonials = getLocal('testimonials').filter((t: any) => t.is_moderated);
       const persons = getLocal('persons');
       return testimonials.map((t: any) => {
-        const p = persons.find((p: any) => p.full_name === t.person_name);
+        const p = persons.find((p: any) => p.id === t.person_id);
         return {
           ...t,
           relationship: p?.relationship_to_school || [],
