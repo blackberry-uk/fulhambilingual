@@ -320,6 +320,14 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
         return;
       }
 
+      // Check for duplicate email before creating new record
+      const existingPerson = await storage.getPersonByEmail(formData.email_address);
+      if (existingPerson) {
+        throw new Error(lang === Language.EN
+          ? 'This email address has already been used to sign the petition. Please click on "Manage my Signature" to update your information.'
+          : 'Cette adresse e-mail a déjà été utilisée pour signer la pétition. Veuillez cliquer sur "Gérer ma signature" pour mettre à jour vos informations.');
+      }
+
       const personData = await storage.addPerson({
         id: '',
         full_name: formData.full_name,

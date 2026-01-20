@@ -63,6 +63,22 @@ export const storage = {
     }
   },
 
+  getPersonByEmail: async (email: string) => {
+    if (isSupabaseReady()) {
+      const { data, error } = await supabase!
+        .from('persons')
+        .select('*')
+        .eq('email_address', email.toLowerCase().trim())
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error; // PGRST116 is "not found"
+      return data;
+    } else {
+      const persons = getLocal('persons');
+      return persons.find((p: any) => p.email_address.toLowerCase() === email.toLowerCase().trim());
+    }
+  },
+
   addTestimonial: async (testimonial: Testimonial) => {
     if (isSupabaseReady()) {
       const { data, error } = await supabase!
