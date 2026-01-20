@@ -788,7 +788,7 @@ const Testimonials = () => {
 
           <div className="flex flex-col items-center">
             <button
-              onClick={() => setFilter('Alumni (over 16)')}
+              onClick={() => setFilter(filter === 'Alumni (over 16)' ? 'all' : 'Alumni (over 16)')}
               className={`px-8 rounded-full text-[11px] font-black uppercase tracking-widest transition-all border-2 h-12 flex items-center justify-center ${filter === 'Alumni (over 16)' ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl shadow-indigo-100' : 'bg-white text-indigo-600 border-indigo-100 hover:border-indigo-600'}`}
             >
               Alumni - Anciens Élèves
@@ -971,7 +971,7 @@ const SignatoryList = () => {
 
           <div className="flex flex-col items-center">
             <button
-              onClick={() => setFilter('Alumni (over 16)')}
+              onClick={() => setFilter(filter === 'Alumni (over 16)' ? 'all' : 'Alumni (over 16)')}
               className={`px-8 rounded-full text-[11px] font-black uppercase tracking-widest transition-all border-2 h-12 flex items-center justify-center ${filter === 'Alumni (over 16)' ? 'bg-indigo-600 text-white border-indigo-600 shadow-indigo-100 shadow-xl' : 'bg-white text-indigo-600 border-indigo-100 hover:border-indigo-600'}`}
             >
               Alumni - Anciens Élèves
