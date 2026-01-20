@@ -10,6 +10,8 @@ interface AnalyticsData {
     languageBreakdown: { EN: number; FR: number };
     consentRate: number;
     testimonialsCount: number;
+    debugRawYearGroups?: string[];
+    debugNormalizedCounts?: { [key: string]: number };
 }
 
 const Analytics: React.FC = () => {
@@ -34,13 +36,24 @@ const Analytics: React.FC = () => {
                 });
             });
 
-            // Year group breakdown
+            // Year group breakdown with fuzzy normalization
+            // Normalize variations like GSA, GSB, GSC -> GS
             const yearGroupCounts: { [key: string]: number } = {};
+            const rawYearGroups: string[] = [];
             persons.forEach(person => {
                 person.student_year_groups?.forEach(year => {
-                    yearGroupCounts[year] = (yearGroupCounts[year] || 0) + 1;
+                    rawYearGroups.push(year);
+                    // Normalize year groups: GSA/GSB/GSC -> GS, PSA/PSB -> PS, etc.
+                    // Trim whitespace and normalize to uppercase first
+                    const trimmed = year.trim().toUpperCase();
+                    // Match patterns like "GSB", "GS-B", "GS B", etc. and extract just the base grade
+                    const normalized = trimmed.replace(/^(PS|MS|GS|CP|CE1|CE2|CM1|CM2)[\s\-]?[A-Z]?$/i, '$1').toUpperCase();
+                    yearGroupCounts[normalized] = (yearGroupCounts[normalized] || 0) + 1;
                 });
             });
+
+            console.log('📊 Raw year groups from DB:', [...new Set(rawYearGroups)].sort());
+            console.log('📊 Normalized year group counts:', yearGroupCounts);
 
             // Language breakdown
             const languageCounts = { EN: 0, FR: 0 };
@@ -62,7 +75,9 @@ const Analytics: React.FC = () => {
                 yearGroupBreakdown: yearGroupCounts,
                 languageBreakdown: languageCounts,
                 consentRate,
-                testimonialsCount: testimonials.length
+                testimonialsCount: testimonials.length,
+                debugRawYearGroups: [...new Set(rawYearGroups)].sort(),
+                debugNormalizedCounts: yearGroupCounts
             });
         } catch (err) {
             console.error('Failed to load analytics:', err);
@@ -112,6 +127,25 @@ const Analytics: React.FC = () => {
                     <div className="bg-white rounded-2xl p-6 shadow-sm border-2 border-gray-100">
                         <div className="text-sm font-black text-gray-400 uppercase tracking-wider mb-2">EN / FR Split</div>
                         <div className="text-2xl font-black text-gray-700">{data.languageBreakdown.EN} / {data.languageBreakdown.FR}</div>
+                    </div>
+                </div>
+
+                {/* Debug Info */}
+                <div className="bg-yellow-50 rounded-2xl p-8 shadow-sm border-2 border-yellow-200 mb-8">
+                    <h2 className="text-2xl font-black text-gray-900 mb-6">🐛 Debug Info</h2>
+                    <div className="space-y-4">
+                        <div>
+                            <div className="font-bold text-gray-700 mb-2">Raw Year Groups from Database:</div>
+                            <div className="bg-white p-4 rounded-lg font-mono text-sm">
+                                {data.debugRawYearGroups?.join(', ') || 'None'}
+                            </div>
+                        </div>
+                        <div>
+                            <div className="font-bold text-gray-700 mb-2">Normalized Counts:</div>
+                            <div className="bg-white p-4 rounded-lg font-mono text-sm">
+                                {JSON.stringify(data.debugNormalizedCounts, null, 2)}
+                            </div>
+                        </div>
                     </div>
                 </div>
 

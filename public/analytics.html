@@ -190,16 +190,16 @@
 
                 // Calculate year groups with fuzzy matching
                 const yearGroupCounts = {};
-                const YEAR_GROUP_ORDER = ['PS', 'MS', 'CP', 'CE1', 'CE2', 'CM1', 'CM2', '6eme', '5eme', '4eme', '3eme', '2de', '1ere', 'Terminale'];
+                const YEAR_GROUP_ORDER = ['PS', 'MS', 'GS', 'CP', 'CE1', 'CE2', 'CM1', 'CM2', '6eme', '5eme', '4eme', '3eme', '2de', '1ere', 'Terminale'];
 
                 function normalizeYearGroup(input) {
                     if (!input) return null;
                     const normalized = input.toUpperCase().trim().replace(/[^A-Z0-9]/g, '');
 
                     // Fuzzy matching rules
-                    if (normalized.includes('GSA') || normalized === 'PS') return 'PS';
-                    if (normalized.includes('MSA') || normalized === 'MS') return 'MS';
-                    if (normalized.includes('GS')) return 'MS'; // Grande Section = MS
+                    if (normalized.match(/^PS[A-Z]?$/)) return 'PS'; // PSA, PSB, PS
+                    if (normalized.match(/^MS[A-Z]?$/)) return 'MS'; // MSA, MSB, MS
+                    if (normalized.match(/^GS[A-Z]?$/)) return 'GS'; // GSA, GSB, GSC, GS
                     if (normalized === 'CP') return 'CP';
                     if (normalized === 'CE1') return 'CE1';
                     if (normalized === 'CE2') return 'CE2';
@@ -241,7 +241,7 @@
             const sortedRelationships = Object.entries(relationships).sort((a, b) => b[1] - a[1]);
 
             // Sort year groups by predefined order
-            const YEAR_GROUP_ORDER = ['PS', 'MS', 'CP', 'CE1', 'CE2', 'CM1', 'CM2', '6eme', '5eme', '4eme', '3eme', '2de', '1ere', 'Terminale'];
+            const YEAR_GROUP_ORDER = ['PS', 'MS', 'GS', 'CP', 'CE1', 'CE2', 'CM1', 'CM2', '6eme', '5eme', '4eme', '3eme', '2de', '1ere', 'Terminale'];
             const sortedYearGroups = YEAR_GROUP_ORDER
                 .filter(year => yearGroups[year])
                 .map(year => [year, yearGroups[year]]);
