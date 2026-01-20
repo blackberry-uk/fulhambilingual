@@ -87,19 +87,68 @@ export const storage = {
       return newItem;
     }
   },
+  updateTestimonial: async (personName: string, updates: Partial<Testimonial>) => {
+    if (isSupabaseReady()) {
+      const { data, error } = await supabase!
+        .from('testimonials')
+        .update({
+          content: updates.content,
+          content_translated: updates.content_translated,
+          language: updates.language,
+          is_moderated: updates.is_moderated
+        })
+        .eq('person_name', personName)
+        .select();
+
+      if (error) throw error;
+      return data;
+    } else {
+      const items = getLocal('testimonials');
+      const index = items.findIndex((t: any) => t.person_name === personName);
+      if (index > -1) {
+        items[index] = { ...items[index], ...updates };
+        setLocal('testimonials', items);
+      }
+      return items[index];
+    }
+  },
 
   getTestimonials: async () => {
     if (isSupabaseReady()) {
-      const { data, error } = await supabase!
+      const { data: testimonials, error } = await supabase!
         .from('testimonials')
         .select('*')
         .eq('is_moderated', true)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      if (!testimonials) return [];
+
+      const { data: persons } = await supabase!
+        .from('persons')
+        .select('full_name, relationship_to_school, student_year_groups');
+
+      const personMap = new Map(persons?.map(p => [p.full_name, p]) || []);
+
+      return testimonials.map(t => {
+        const p = personMap.get(t.person_name);
+        return {
+          ...t,
+          relationship: p?.relationship_to_school || [],
+          years: p?.student_year_groups || []
+        };
+      });
     } else {
-      return getLocal('testimonials').filter((t: any) => t.is_moderated).sort((a: any, b: any) => b.created_at.localeCompare(a.created_at));
+      const testimonials = getLocal('testimonials').filter((t: any) => t.is_moderated);
+      const persons = getLocal('persons');
+      return testimonials.map((t: any) => {
+        const p = persons.find((p: any) => p.full_name === t.person_name);
+        return {
+          ...t,
+          relationship: p?.relationship_to_school || [],
+          years: p?.student_year_groups || []
+        };
+      }).sort((a: any, b: any) => b.created_at.localeCompare(a.created_at));
     }
   },
 
@@ -196,22 +245,53 @@ export const storage = {
     if (isSupabaseReady()) {
       const { data, error } = await supabase!
         .from('petition_records')
-        .select('submission_timestamp, persons(full_name)')
-        .eq('consent_public_use', true)
-        .order('submission_timestamp', { ascending: false });
+        .select(`
+          submission_timestamp,
+          consent_public_use,
+          supporting_comment,
+          persons(full_name, relationship_to_school, student_year_groups)
+        `)
+        .eq('petition_support', true);
 
       if (error) return [];
-      return data.map(r => ({
-        name: (r.persons as any)?.full_name || "Supporter",
-        timestamp: r.submission_timestamp
-      }));
+
+      // Fetch all testimonial IDs to map them
+      const { data: testims } = await supabase!
+        .from('testimonials')
+        .select('id, person_name')
+        .eq('is_moderated', true);
+
+      const testimMap = new Map(testims?.map(t => [t.person_name, t.id]) || []);
+
+      return data.map(r => {
+        const fullName = (r.persons as any)?.full_name || "Supporter";
+        return {
+          name: r.consent_public_use ? fullName : "Anonymous",
+          relationship: (r.persons as any)?.relationship_to_school || [],
+          years: (r.persons as any)?.student_year_groups || [],
+          timestamp: r.submission_timestamp,
+          hasTestimonial: !!r.supporting_comment && r.consent_public_use,
+          testimonialId: r.consent_public_use ? testimMap.get(fullName) : null,
+          consent: r.consent_public_use
+        };
+      });
     } else {
-      const records = getLocal('petition_records').filter((r: any) => r.consent_public_use);
+      const records = getLocal('petition_records').filter((r: any) => r.petition_support);
       const persons = getLocal('persons');
-      return records.map((r: any) => ({
-        name: persons.find((p: any) => p.id === r.person_id)?.full_name || "Supporter",
-        timestamp: r.submission_timestamp
-      })).sort((a: any, b: any) => b.timestamp.localeCompare(a.timestamp));
+      const testims = getLocal('testimonials');
+      return records.map((r: any) => {
+        const p = persons.find((p: any) => p.id === r.person_id);
+        const t = testims.find((t: any) => t.person_name === p?.full_name);
+        return {
+          name: r.consent_public_use ? (p?.full_name || "Supporter") : "Anonymous",
+          relationship: p?.relationship_to_school || [],
+          years: p?.student_year_groups || [],
+          timestamp: r.submission_timestamp,
+          hasTestimonial: !!r.supporting_comment && r.consent_public_use,
+          testimonialId: r.consent_public_use ? t?.id : null,
+          consent: r.consent_public_use
+        };
+      });
     }
   },
 
