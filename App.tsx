@@ -906,13 +906,12 @@ const SignatoryList = () => {
     : sigs.filter(s => s.relationship.some(r => r.includes(filter.split(' - ')[0])));
 
   const sortedSigs = [...filteredSigs].sort((a, b) => {
-    // Always show consented names first
-    if (a.consent !== b.consent) return a.consent ? -1 : 1;
-
-    // Then sort by selected method
+    // When sorting by date, include everyone in chronological order
     if (sortBy === 'date') {
       return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
     } else {
+      // When sorting alphabetically, show consented names first
+      if (a.consent !== b.consent) return a.consent ? -1 : 1;
       return a.name.localeCompare(b.name);
     }
   });
