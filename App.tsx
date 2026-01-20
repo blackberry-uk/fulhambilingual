@@ -68,7 +68,10 @@ const PetitionContent = () => {
       </div>
       <div
         className="prose prose-xl max-w-3xl mx-auto text-gray-800 leading-relaxed font-medium text-left animate-in fade-in duration-700"
-        dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, '<br/>') }}
+        style={{
+          listStylePosition: 'outside',
+        }}
+        dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, '<br/>').replace(/<ul>/g, '<ul style="list-style-type: disc; margin-left: 2rem; margin-top: 1rem; margin-bottom: 1rem;">').replace(/<li>/g, '<li style="margin-bottom: 0.5rem;">') }}
       />
     </div>
   );
@@ -79,19 +82,23 @@ const PetitionContent = () => {
 const Navbar = () => {
   const { lang, setLang, view, setView } = useApp();
   const t = TRANSLATIONS[lang];
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-white/90 backdrop-blur-xl sticky top-0 z-50 py-6 border-b border-gray-50">
-      <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+    <nav className="bg-white/90 backdrop-blur-xl sticky top-0 z-50 py-4 md:py-6 border-b border-gray-50">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 flex justify-between items-center">
         <button
           onClick={() => {
             setView('home');
+            setMobileMenuOpen(false);
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
           className="group flex flex-col text-left"
         >
-          <span className="font-black text-[#d52b27] text-lg uppercase tracking-tighter leading-none group-hover:opacity-60 transition-opacity">{t.site_name}</span>
+          <span className="font-black text-[#d52b27] text-base md:text-lg uppercase tracking-tighter leading-none group-hover:opacity-60 transition-opacity">{t.site_name}</span>
         </button>
+
+        {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-2">
           <button
             onClick={() => setView('petition')}
@@ -118,13 +125,59 @@ const Navbar = () => {
             {t.nav_signatories}
           </button>
         </div>
-        <div className="flex items-center space-x-4">
+
+        <div className="flex items-center space-x-3">
+          {/* Language Toggle */}
           <div className="bg-gray-100 p-1 rounded-full flex">
-            <button onClick={() => setLang(Language.EN)} className={`px-4 py-1.5 rounded-full text-[9px] font-black transition-all ${lang === Language.EN ? 'bg-white text-[#d52b27] shadow-sm' : 'text-gray-400'}`}>EN</button>
-            <button onClick={() => setLang(Language.FR)} className={`px-4 py-1.5 rounded-full text-[9px] font-black transition-all ${lang === Language.FR ? 'bg-white text-[#d52b27] shadow-sm' : 'text-gray-400'}`}>FR</button>
+            <button onClick={() => setLang(Language.EN)} className={`px-3 md:px-4 py-1.5 rounded-full text-[9px] font-black transition-all ${lang === Language.EN ? 'bg-white text-[#d52b27] shadow-sm' : 'text-gray-400'}`}>EN</button>
+            <button onClick={() => setLang(Language.FR)} className={`px-3 md:px-4 py-1.5 rounded-full text-[9px] font-black transition-all ${lang === Language.FR ? 'bg-white text-[#d52b27] shadow-sm' : 'text-gray-400'}`}>FR</button>
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 text-gray-600 hover:text-[#d52b27] transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {mobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-white border-t border-gray-100 py-4 px-4 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+          <button
+            onClick={() => { setView('petition'); setMobileMenuOpen(false); }}
+            className={`w-full text-left px-4 py-3 rounded-lg text-sm font-bold transition-all ${view === 'petition' ? 'bg-[#d52b27] text-white' : 'text-gray-700 hover:bg-gray-50'}`}
+          >
+            {t.nav_petition}
+          </button>
+          <button
+            onClick={() => { setView('testimonials'); setMobileMenuOpen(false); }}
+            className={`w-full text-left px-4 py-3 rounded-lg text-sm font-bold transition-all ${view === 'testimonials' ? 'bg-[#d52b27] text-white' : 'text-gray-700 hover:bg-gray-50'}`}
+          >
+            {t.nav_testimonials}
+          </button>
+          <button
+            onClick={() => { setView('forum'); setMobileMenuOpen(false); }}
+            className={`w-full text-left px-4 py-3 rounded-lg text-sm font-bold transition-all ${view === 'forum' ? 'bg-[#d52b27] text-white' : 'text-gray-700 hover:bg-gray-50'}`}
+          >
+            {t.nav_forum}
+          </button>
+          <button
+            onClick={() => { setView('signatories'); setMobileMenuOpen(false); }}
+            className={`w-full text-left px-4 py-3 rounded-lg text-sm font-bold transition-all ${view === 'signatories' ? 'bg-[#d52b27] text-white' : 'text-gray-700 hover:bg-gray-50'}`}
+          >
+            {t.nav_signatories}
+          </button>
+        </div>
+      )}
     </nav>
   );
 };
