@@ -170,6 +170,15 @@
 
                 const records = await recordsResponse.json();
 
+                const testimonialsResponse = await fetch(`${SUPABASE_URL}/rest/v1/testimonials?select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+
+                const testimonials = await testimonialsResponse.json();
+
                 // Calculate stats
                 const relationshipCounts = {};
                 persons.forEach(person => {
@@ -182,16 +191,16 @@
                 const withConsent = records.filter(r => r.consent_public_use).length;
                 const consentRate = ((withConsent / records.length) * 100).toFixed(1);
 
-                const enCount = persons.filter(p => p.submission_language === 'EN').length;
-                const frCount = persons.filter(p => p.submission_language === 'FR').length;
+                const enTestimonials = testimonials.filter(t => t.language === 'EN').length;
+                const frTestimonials = testimonials.filter(t => t.language === 'FR').length;
 
-                renderDashboard(persons.length, consentRate, enCount, frCount, relationshipCounts);
+                renderDashboard(persons.length, consentRate, enTestimonials, frTestimonials, relationshipCounts);
             } catch (err) {
                 document.getElementById('content').innerHTML = `<div class="loading" style="color: #ef4444;">Error loading data: ${err.message}</div>`;
             }
         }
 
-        function renderDashboard(total, consentRate, enCount, frCount, relationships) {
+        function renderDashboard(total, consentRate, enTestimonials, frTestimonials, relationships) {
             const sorted = Object.entries(relationships).sort((a, b) => b[1] - a[1]);
 
             const barsHTML = sorted.map(([name, count]) => {
@@ -220,8 +229,8 @@
                         <div class="stat-value">${consentRate}%</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">EN / FR Split</div>
-                        <div class="stat-value" style="font-size: 24px;">${enCount} / ${frCount}</div>
+                        <div class="stat-label">Testimonials (EN/FR)</div>
+                        <div class="stat-value" style="font-size: 24px;">${enTestimonials} / ${frTestimonials}</div>
                     </div>
                 </div>
 
