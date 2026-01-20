@@ -132,6 +132,36 @@ export const storage = {
     }
   },
 
+  updateTestimonialByPersonOrAnonymous: async (personName: string, updates: Partial<Testimonial>) => {
+    if (isSupabaseReady()) {
+      // Only include fields that are actually provided
+      const updateData: any = {};
+      if (updates.person_name !== undefined) updateData.person_name = updates.person_name;
+      if (updates.content !== undefined) updateData.content = updates.content;
+      if (updates.content_translated !== undefined) updateData.content_translated = updates.content_translated;
+      if (updates.language !== undefined) updateData.language = updates.language;
+      if (updates.is_moderated !== undefined) updateData.is_moderated = updates.is_moderated;
+
+      // Try to find testimonial by real name first, then by Anonymous
+      const { data, error } = await supabase!
+        .from('testimonials')
+        .update(updateData)
+        .or(`person_name.eq.${personName},person_name.eq.Anonymous,person_name.eq.Anonyme`)
+        .select();
+
+      if (error) throw error;
+      return data;
+    } else {
+      const items = getLocal('testimonials');
+      const index = items.findIndex((t: any) => t.person_name === personName || t.person_name === 'Anonymous' || t.person_name === 'Anonyme');
+      if (index > -1) {
+        items[index] = { ...items[index], ...updates };
+        setLocal('testimonials', items);
+      }
+      return items[index];
+    }
+  },
+
   getTestimonials: async () => {
     if (isSupabaseReady()) {
       const { data: testimonials, error } = await supabase!

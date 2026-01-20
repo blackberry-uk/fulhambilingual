@@ -323,7 +323,7 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
               const target = detected === Language.EN ? Language.FR : Language.EN;
               const translated = await translateText(formData.comment, detected, target);
 
-              await storage.updateTestimonial(formData.full_name, {
+              await storage.updateTestimonialByPersonOrAnonymous(formData.full_name, {
                 person_name: displayName,
                 content: formData.comment,
                 content_translated: translated,
@@ -332,13 +332,13 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
               });
             } else if (consentChanged) {
               // Only consent changed - update name only, preserve everything else
-              await storage.updateTestimonial(formData.full_name, {
+              await storage.updateTestimonialByPersonOrAnonymous(formData.full_name, {
                 person_name: displayName,
                 is_moderated: true
               });
             } else {
               // Nothing changed - still update moderation status
-              await storage.updateTestimonial(formData.full_name, {
+              await storage.updateTestimonialByPersonOrAnonymous(formData.full_name, {
                 person_name: displayName,
                 is_moderated: true
               });
