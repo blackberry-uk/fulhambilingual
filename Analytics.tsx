@@ -24,8 +24,8 @@ const Analytics: React.FC = () => {
 
     const loadAnalytics = async () => {
         try {
-            const persons = await storage.getAllPersons();
-            const records = await storage.getAllPetitionRecords();
+            const persons = await storage.getSafeAnalyticsPersons();
+            const records = await storage.getSafeAnalyticsRecords();
 
             // Relationship breakdown
             const relationshipCounts: { [key: string]: number } = {};

@@ -204,7 +204,7 @@ export const storage = {
       if (!testimonials) return [];
 
       const { data: persons } = await supabase!
-        .from('persons')
+        .from('safe_profiles')
         .select('id, full_name, relationship_to_school, student_year_groups');
 
       const personMap = new Map(persons?.map(p => [p.id, p]) || []);
@@ -308,13 +308,16 @@ export const storage = {
 
   getPetitionStats: async () => {
     if (isSupabaseReady()) {
-      const { count, error } = await supabase!
-        .from('petition_records')
-        .select('*', { count: 'exact', head: true })
-        .eq('petition_support', true);
+      const { data, error } = await supabase!
+        .from('petition_stats')
+        .select('total')
+        .single();
 
-      if (error) return { total: 0 };
-      return { total: count || 0 };
+      if (error) {
+        console.error('Error fetching stats:', error);
+        return { total: 0 };
+      }
+      return { total: data?.total || 0 };
     } else {
       return { total: getLocal('petition_records').length };
     }
@@ -323,37 +326,23 @@ export const storage = {
   getPublicSignatories: async () => {
     if (isSupabaseReady()) {
       const { data, error } = await supabase!
-        .from('petition_records')
-        .select(`
-          submission_timestamp,
-          consent_public_use,
-          supporting_comment,
-          persons(full_name, relationship_to_school, student_year_groups)
-        `)
-        .eq('petition_support', true);
+        .from('safe_signatories')
+        .select('*');
 
-      if (error) return [];
+      if (error) {
+        console.error('Error fetching signatories:', error);
+        return [];
+      }
 
-      // Fetch all testimonial IDs to map them
-      const { data: testims } = await supabase!
-        .from('testimonials')
-        .select('id, person_name')
-        .eq('is_moderated', true);
-
-      const testimMap = new Map(testims?.map(t => [t.person_name, t.id]) || []);
-
-      return data.map(r => {
-        const fullName = (r.persons as any)?.full_name || "Supporter";
-        return {
-          name: r.consent_public_use ? fullName : "Anonymous",
-          relationship: (r.persons as any)?.relationship_to_school || [],
-          years: (r.persons as any)?.student_year_groups || [],
-          timestamp: r.submission_timestamp,
-          hasTestimonial: !!r.supporting_comment && r.consent_public_use,
-          testimonialId: r.consent_public_use ? testimMap.get(fullName) : null,
-          consent: r.consent_public_use
-        };
-      });
+      return data.map(r => ({
+        name: r.name,
+        relationship: r.relationship || [],
+        years: r.years || [],
+        timestamp: r.timestamp,
+        hasTestimonial: !!r.supporting_comment && r.consent,
+        testimonialId: r.testimonial_id,
+        consent: r.consent
+      }));
     } else {
       const records = getLocal('petition_records').filter((r: any) => r.petition_support);
       const persons = getLocal('persons');
@@ -372,6 +361,28 @@ export const storage = {
         };
       });
     }
+  },
+
+  getSafeAnalyticsPersons: async () => {
+    if (isSupabaseReady()) {
+      const { data, error } = await supabase!
+        .from('safe_analytics')
+        .select('*');
+      if (error) throw error;
+      return data || [];
+    }
+    return getLocal('persons');
+  },
+
+  getSafeAnalyticsRecords: async () => {
+    if (isSupabaseReady()) {
+      const { data, error } = await supabase!
+        .from('safe_record_analytics')
+        .select('*');
+      if (error) throw error;
+      return data || [];
+    }
+    return getLocal('petition_records');
   },
 
   getAllPersons: async () => {
