@@ -151,8 +151,22 @@
         };
 
         async function loadData() {
+            // Simple Password Wall
+            const STATS_PASS = 'Fulham2026!'; // You can change this
+            let savedPass = localStorage.getItem('stats_auth');
+
+            if (savedPass !== STATS_PASS) {
+                const pass = prompt('Please enter the dashboard password:');
+                if (pass === STATS_PASS) {
+                    localStorage.setItem('stats_auth', pass);
+                } else {
+                    document.getElementById('content').innerHTML = '<div class="loading" style="color: #ef4444;">Access Denied. Incorrect password.</div>';
+                    return;
+                }
+            }
+
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/persons?select=*`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/safe_analytics?select=*`, {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
@@ -161,7 +175,7 @@
 
                 const persons = await response.json();
 
-                const recordsResponse = await fetch(`${SUPABASE_URL}/rest/v1/petition_records?select=*`, {
+                const recordsResponse = await fetch(`${SUPABASE_URL}/rest/v1/safe_record_analytics?select=*`, {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
@@ -170,7 +184,7 @@
 
                 const records = await recordsResponse.json();
 
-                const testimonialsResponse = await fetch(`${SUPABASE_URL}/rest/v1/testimonials?select=*`, {
+                const testimonialsResponse = await fetch(`${SUPABASE_URL}/rest/v1/testimonials?select=*&is_moderated=eq.true`, {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
