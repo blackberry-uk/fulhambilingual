@@ -125,6 +125,17 @@ const Navbar = () => {
           >
             {t.nav_signatories}
           </button>
+          <a
+            href="https://www.wixbilingual.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-2 rounded-full text-[13px] font-bold transition-all text-white bg-[#d52b27] hover:bg-gray-900 shadow-md flex items-center gap-2"
+          >
+            {t.nav_wix_petition}
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
         </div>
 
         <div className="flex items-center space-x-3">
@@ -177,6 +188,17 @@ const Navbar = () => {
           >
             {t.nav_signatories}
           </button>
+          <a
+            href="https://www.wixbilingual.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full text-left px-4 py-3 rounded-lg text-sm font-bold transition-all bg-[#d52b27] text-white flex items-center justify-between"
+          >
+            {t.nav_wix_petition}
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
         </div>
       )}
     </nav>
