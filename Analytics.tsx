@@ -64,7 +64,7 @@ const Analytics: React.FC = () => {
 
             // Consent rate
             const withConsent = records.filter(r => r.consent_public_use).length;
-            const consentRate = (withConsent / records.length) * 100;
+            const consentRate = records.length > 0 ? (withConsent / records.length) * 100 : 0;
 
             // Testimonials count
             const testimonials = await storage.getTestimonials();

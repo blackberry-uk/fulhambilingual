@@ -240,7 +240,7 @@
                 });
 
                 const withConsent = records.filter(r => r.consent_public_use).length;
-                const consentRate = ((withConsent / records.length) * 100).toFixed(1);
+                const consentRate = records.length > 0 ? ((withConsent / records.length) * 100).toFixed(1) : "0.0";
 
                 const enTestimonials = testimonials.filter(t => t.language === 'EN').length;
                 const frTestimonials = testimonials.filter(t => t.language === 'FR').length;
