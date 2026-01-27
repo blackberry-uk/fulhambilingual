@@ -423,57 +423,44 @@ const PetitionForm = ({ initialData, isEdit = false, authToken = '' }: { initial
         return;
       }
 
-      // Check for duplicate email before creating new record
-      const existingPerson = await storage.getPersonByEmail(formData.email_address);
-      if (existingPerson) {
-        throw new Error(lang === Language.EN
-          ? 'This email address has already been used to sign the petition. Please click on "Manage my Signature" to update your information.'
-          : 'Cette adresse e-mail a déjà été utilisée pour signer la pétition. Veuillez cliquer sur "Gérer ma signature" pour mettre à jour vos informations.');
-      }
+      // --- Initial Signup Flow (NEW Secure Edge Function) ---
+      const detected = await detectLanguage(formData.comment);
+      const target = detected === Language.EN ? Language.FR : Language.EN;
+      const translated = formData.comment ? await translateText(formData.comment, detected, target) : '';
 
-      const personData = await storage.addPerson({
-        id: '',
-        full_name: formData.full_name,
-        email_address: formData.email_address,
-        relationship_to_school: formData.relationships,
-        student_year_groups: formData.year_groups.split(',').map(s => s.trim()).filter(Boolean),
-        submission_language: lang,
-        created_at: new Date().toISOString()
+      const signupResponse = await fetch('/api/sign-petition', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          person: {
+            full_name: formData.full_name,
+            email_address: formData.email_address,
+            relationship_to_school: formData.relationships,
+            student_year_groups: formData.year_groups.split(',').map(s => s.trim()).filter(Boolean),
+            submission_language: lang
+          },
+          record: {
+            petition_support: formData.petition_support,
+            supporting_comment: formData.comment,
+            consent_public_use: formData.consent,
+            comment_en: detected === Language.EN ? formData.comment : translated,
+            comment_fr: detected === Language.FR ? formData.comment : translated,
+          },
+          testimonial: formData.comment ? {
+            person_name: formData.consent ? formData.full_name : (detected === Language.EN ? 'Anonymous' : 'Anonyme'),
+            content: formData.comment,
+            content_translated: translated,
+            is_moderated: true,
+            language: detected,
+          } : null
+        })
       });
 
-      const record: PetitionRecord = {
-        id: '',
-        person_id: personData.id,
-        petition_support: formData.petition_support,
-        supporting_comment: formData.comment,
-        consent_public_use: formData.consent,
-        submission_timestamp: new Date().toISOString()
-      };
-
-      if (formData.comment) {
-        const detected = await detectLanguage(formData.comment);
-        const target = detected === Language.EN ? Language.FR : Language.EN;
-        const translated = await translateText(formData.comment, detected, target);
-
-        record.comment_en = detected === Language.EN ? formData.comment : translated;
-        record.comment_fr = detected === Language.FR ? formData.comment : translated;
-
-        // Create testimonial even if consent is false, but use "Anonymous" as the name
-        const displayName = formData.consent ? formData.full_name : (detected === Language.EN ? 'Anonymous' : 'Anonyme');
-
-        await storage.addTestimonial({
-          id: '',
-          person_id: personData.id,
-          person_name: displayName,
-          content: formData.comment,
-          content_translated: translated,
-          is_moderated: true,
-          language: detected,
-          created_at: new Date().toISOString()
-        });
+      if (!signupResponse.ok) {
+        const err = await signupResponse.json();
+        throw new Error(err.error || 'Action failed');
       }
 
-      await storage.addPetitionRecord(record);
       refreshStats();
       setSubmitted(true);
     } catch (err: any) {
